@@ -1,0 +1,77 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Aa]ssets/AssetStoreTools/
+[Mm]anifest.json
+[Pp]rojectSettings/ProjectVersion.txt
+
+# Visual Studio generated
+[Ee]xport/
+[Dd]ata/
+[Aa]ssembly-CSharp.csproj
+[Aa]ssembly-CSharp-Editor.csproj
+[Aa]ssembly-UnityScript.csproj
+[Aa]ssembly-UnityScript-Editor.csproj
+[Aa]ssembly-Boo.csproj
+[Aa]ssembly-Boo-Editor.csproj
+[Aa]ssembly-CSharp.Player.csproj
+[Aa]ssembly-CSharp-Editor.Player.csproj
+[Aa]ssembly-UnityScript.Player.csproj
+[Aa]ssembly-UnityScript-Editor.Player.csproj
+[Aa]ssembly-Boo.Player.csproj
+[Aa]ssembly-Boo-Editor.Player.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+*.sdf
+*.vshost.exe
+*.vshost.exe.config
+*.resharper
+*.resharper.user
+*.resharper.user.settings
+*.DotSettings.user
+*.DotSettings
+/.vs
+
+# Rider generated
+.idea/
+*.iml
+*.iws
+
+# MacOS generated
+.DS_Store
+.Trashes
+._*
+
+# Windows generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Crash logs
+[Cc]rashLogs/
+
+# Packages that should not be tracked by Git
+Packages/manifest.json
+Packages/packages-lock.json
+
+# Assets
+/Assets/CP/ProChart
+/Assets/CP/ProChartDemo
+/Assets/Fonts/azuki.ttf
+/Assets/Simple Health Bar
+/Assets/UI/TableLayout
+/Assets/Developing
+/Assets/Plugins/gdiplus.dll
+/Assets/Plugins/System.Drawing.dll
