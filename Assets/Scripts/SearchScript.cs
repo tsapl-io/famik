@@ -45,7 +45,6 @@ public class Y2_ResultInfo
 }
 
 public class SearchScript : MonoBehaviour {
-    int[] distances = {5000000, 5000000, 4000000, 2000000, 1000000, 500000, 250000, 100000, 50000, 25000, 10000, 5000, 2000, 1000, 500, 250, 100, 75, 50, 25, 10}; //直径を*10にしてyolpは検索、staticはそのままバーの数
 
     public List<Button> HPButtons = new List<Button> {};
 
@@ -85,6 +84,7 @@ public class SearchScript : MonoBehaviour {
 
         print(str);
         */
+        for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         StartCoroutine(GpsGet());
 	}
 	
@@ -111,33 +111,66 @@ public class SearchScript : MonoBehaviour {
         for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         StartCoroutine(ApiGet());
     }
+    public void PushGpsGet()
+    {
+        StartCoroutine(GpsGet());
+
+    }
+
+    public void MapMoveButton(int trans)
+    {
+        float[] latlon_plus = {0.12063f, 0.05812f, 0.02851f, 0.01754f, 0.00877f, 0.00438f, 0.00219f};
+        // 0: 上
+        // 1: 下
+        // 2: 左
+        // 3: 右
+        if (trans == 0) {
+            lat += latlon_plus[(int)Math.Floor(z_MapSlider.value) - 13];
+        } else if (trans == 1) {
+            lat -= latlon_plus[(int)Math.Floor(z_MapSlider.value) - 13];
+        } else if (trans == 2) {
+            lon -= latlon_plus[(int)Math.Floor(z_MapSlider.value) - 13];
+        } else if (trans == 3) {
+            lon += latlon_plus[(int)Math.Floor(z_MapSlider.value) - 13];
+        }
+        PushSearchButton();
+    }
 
     IEnumerator GpsGet()
     {
-        if( isRunning ) { yield break; }
-        isRunning = true;
-        if (!Input.location.isEnabledByUser) {
-            DialogManage("権限がありません。\nFamikへの位置情報アクセス許可をお願いします。");
-            yield break;
-        }
-        Input.location.Start();
-        int maxWait = 10;
-        while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0) {
-            yield return new WaitForSeconds(1);
-            maxWait--;
-        }
-        if (maxWait < 1) {
-            DialogManage("タイムアウトしました。もう一度やり直してください。");
-            isRunning = false;          
-            yield break;
-        }
-        if (Input.location.status != LocationServiceStatus.Failed) {
-            lat = Input.location.lastData.latitude;
-            lon = Input.location.lastData.longitude;
-            Input.location.Stop();
+        #if UNITY_EDITOR
+            lat = 35.680914f;
+            lon = 139.767735f;
+            yield return new WaitForEndOfFrame();
             StartCoroutine(ApiGet());
-        }
-        isRunning = false;
+        #else
+            if( isRunning ) { yield break; }
+            isRunning = true;
+            if (!Input.location.isEnabledByUser) {
+                DialogManage("権限がありません。\nFamikへの位置情報アクセス許可をお願いします。");
+                yield break;
+            }
+            Input.location.Start();
+            int maxWait = 10;
+            while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0) {
+                yield return new WaitForSeconds(1);
+                maxWait--;
+            }
+            if (maxWait < 1) {
+                DialogManage("タイムアウトしました。もう一度やり直してください。");
+                isRunning = false;          
+                yield break;
+            }
+            if (Input.location.status != LocationServiceStatus.Failed) {
+                lat = Input.location.lastData.latitude;
+                lon = Input.location.lastData.longitude;
+                Input.location.Stop();
+                isRunning = false;
+                StartCoroutine(ApiGet());
+            } else {
+                isRunning = false;
+            }
+        #endif
     }
 
     IEnumerator ApiGet()
@@ -150,29 +183,17 @@ public class SearchScript : MonoBehaviour {
             isRunning = false;          
             yield break;
         } else {
-
-            //float lat = 35.680914f;
-            //float lon = 139.767735f;
-            
             Maps.texture = new Texture2D(0, 0);
 
             NameAndTel.text = "";
-            //public string[] SearchCategory = new string[10] {"0401003", "0401002", "0401009", "0401008", "0401001", "0401007", "0401006", "0401004", "0401005", "0401017"};
+
             List<string> SearchCategory = new List<string>{"0401003", "0401002", "0401009", "0401008", "0401001", "0401007", "0401006", "0401004", "0401005", "0401017",};
-            //List<string> SearchCategoryName = 
-
-
-
-            //float lat = 35.680914f;
-            //float lon = 139.767735f;
-            //int distance = 5;
-            //string open = "now";
-            string code = SearchCategory[CategoryDropdown.value];
-            //int z = 16;
+            float[] distances = {11f, 5.3f, 2.6f, 1.6f, 0.9f, 0.4f, 0.2f};
 
             string appid = "XXXXXXXXXXXXXXXXXXXX";
             string staticmap_url = "https://map.yahooapis.jp/map/V1/static?appid=" + appid + "&lat=" + lat + "&lon=" + lon + "&z=" + ((int)Math.Floor(z_MapSlider.value)).ToString() + "&pointer=on&width=750&height=750";
-            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + appid + "&gc=" + code + "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=" + (distances[(int)Math.Floor(z_MapSlider.value)] / 100).ToString() + "&output=json&results=7&detail=full";  
+            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + appid + "&gc=" + SearchCategory[CategoryDropdown.value] + "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=" + distances[(int)Math.Floor(z_MapSlider.value) - 13].ToString() + "&output=json&results=7&detail=full&sort=dist";  
+            print(distances[(int)Math.Floor(z_MapSlider.value) - 13]);
             if (OpenNow.isOn) yolp_url += "&open=now";
 
             using (WWW www = new WWW(yolp_url))
@@ -200,7 +221,7 @@ public class SearchScript : MonoBehaviour {
                         staticmap_url += "&pin" + temp + "=" + arr[1] + "," + arr[0] + "," + ApiResponse.Feature[i].Name;
                         string temp2 = ApiResponse.Feature[i].Name;
                         if (temp2.Length > 15) temp2 = temp2.Substring(0, 15) + "...";
-                        NameAndTel.text += temp + ": " + temp2 + "\n";// + " (" + ApiResponse.Feature[i].Property.Tel1 + ")\n";
+                        NameAndTel.text += temp + ": " + temp2 + "\n";
                     }
 
                     for (int s = 0; s < ApiResponse.Feature.Length; s++) { HPButtons[s].gameObject.SetActive(true); }
