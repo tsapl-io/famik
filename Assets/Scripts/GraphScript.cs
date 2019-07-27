@@ -52,11 +52,26 @@ public class GraphScript : MonoBehaviour
         overColumn = column;
     }
 
-    void Start() 
+    public void Start() 
     {
         if (PlayerPrefs.GetString("Famik", "NO DATA") != "NO DATA") {
 
             inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik"));
+
+
+            foreach ( Text n in lineLabels ) print(n.text);
+            foreach ( Transform n in lineChart.gameObject.transform )
+            {
+                Destroy(n.gameObject);
+            }
+            foreach ( Text n in lineLabels ) print(n.text);
+
+            lineLabels = new List<Text>();
+            lineXLabels = new List<Text>();
+            lineYLabels = new List<Text>();
+
+            foreach ( Text n in lineLabels ) print(n.text);
+            print(lineLabels.Count);
 
             dataSet = new ChartData2D();
             for (int i = 0; i < inStorageData.Humans[HumanDropdown.value].OneSicks.Length; i++)
@@ -71,8 +86,6 @@ public class GraphScript : MonoBehaviour
             lineChart.onOverDelegate += OnOverDelegate;
 
             labelLine.SetActive(true);
-
-            lineLabels.Clear();
 
             for (int i = 0; i < dataSet.Rows; i++)
             {
@@ -150,14 +163,14 @@ public class GraphScript : MonoBehaviour
                     minutstemp = inStorageData.Humans[HumanDropdown.value].OneSicks[j].Time.Minute.ToString();
 
                 }
-                lineLabels[dataSet.Columns + j].text = inStorageData.Humans[HumanDropdown.value].OneSicks[j].Time.Month + "/" + inStorageData.Humans[HumanDropdown.value].OneSicks[j].Time.Day + " " + inStorageData.Humans[HumanDropdown.value].OneSicks[j].Time.Hour + ":" + minutstemp + "\n" + TempFever;
+                lineLabels[dataSet.Columns + j].text = inStorageData.Humans[HumanDropdown.value].OneSicks[j].Time.Month + "/" + inStorageData.Humans[HumanDropdown.value].OneSicks[j].Time.Day + " " + inStorageData.Humans[HumanDropdown.value].OneSicks[j].Time.Hour + ":" + minutstemp + "\n\n" + TempFever;
                 lineLabels[dataSet.Columns + j].color = Color.black;
                 lineLabels[dataSet.Columns + j].fontStyle = FontStyle.Bold;
                 lineLabels[dataSet.Columns + j].fontSize = 30;
                 lineLabels[dataSet.Columns + j].rectTransform.localScale = new Vector3(1, 1, 1);
                 lineLabels[dataSet.Columns + j].rectTransform.anchoredPosition = labelPos.position;
-                lineLabels[dataSet.Columns + j].rectTransform.position -= new Vector3(0, 50, 0);
-                lineLabels[dataSet.Columns + j].rectTransform.sizeDelta = new Vector2(180, 70);
+                //lineLabels[dataSet.Columns + j].rectTransform.position -= new Vector3(0, 50, 0);
+                lineLabels[dataSet.Columns + j].rectTransform.sizeDelta = new Vector2(180, 500);
             }
         }
     }

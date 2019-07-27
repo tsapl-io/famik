@@ -116,7 +116,7 @@ public class RegisterScript : MonoBehaviour {
         } else {
             SaveData LoadedData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA"));
             for (int i = 0; i < LoadedData.Humans.Length; i++) {
-                HumanSelectOptions.Add(i + 1 + "番 " + LoadedData.Humans[i].Name);
+                HumanSelectOptions.Add(LoadedData.Humans[i].Name);
             }
             HumanSelect.AddOptions(HumanSelectOptions);
         }

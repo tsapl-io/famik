@@ -38,10 +38,23 @@ public class ShowScript : MonoBehaviour {
 
     public Button ScreenShotButton;
 
+    public GameObject SickTableObject;
+
+    public CP.ProChart.LineChart lineChart;
+
+    public GraphScript graphscript;
+
+    TableRow row;
+    TableCell cell;
+
     public void Start()
     {
+        if (SickTable != null) Destroy(SickTable.gameObject);
+        graphscript.Start();
+
         HumanSelect.ClearOptions();
-        SickTable.ClearRows();
+
+        SickTable = Instantiate(SickTableObject, GameObject.Find("Graphs").transform).GetComponent<TableLayout>();
 
         {
         if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" || JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length == 0) {
@@ -62,7 +75,7 @@ public class ShowScript : MonoBehaviour {
 
                 // プルダウンメニュー追加
                 HumanSelectOptions = new List<string> { };
-                for (int i = 0; i < inStorageData.Humans.Length; i++) HumanSelectOptions.Add(i + 1 + "番 " + inStorageData.Humans[i].Name);
+                for (int i = 0; i < inStorageData.Humans.Length; i++) HumanSelectOptions.Add(inStorageData.Humans[i].Name);
                 HumanSelect.AddOptions(HumanSelectOptions);
 
 
@@ -74,9 +87,11 @@ public class ShowScript : MonoBehaviour {
     public void TableShow()
     {
         // カラム追加
-                SickTable.ClearRows();
-                TableRow row;
-                TableCell cell;
+                for (int i = 0; i < SickTable.Rows.Count; i++)
+                {
+                    Destroy(SickTable.Rows[i].gameObject);
+                    
+                }
 
                 row = SickTable.AddRow();
                 for (int i = 0; i < inStorageData.Humans[HumanSelect.value].OneSicks.Length; i++) {
