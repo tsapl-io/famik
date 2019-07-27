@@ -138,6 +138,7 @@ public class SearchScript : MonoBehaviour {
 
     IEnumerator GpsGet()
     {
+        for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         #if UNITY_EDITOR
             lat = 35.680914f;
             lon = 139.767735f;
