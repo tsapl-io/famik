@@ -25,6 +25,16 @@ public class SceneMover : MonoBehaviour {
     {
         SceneManager.LoadScene("Search");
     }
+    public void ToFree()
+    {
+        SceneManager.LoadScene("Search_Free");
+
+    }
+    public void ToNoFree()
+    {
+        SceneManager.LoadScene("Search_NoFree");
+
+    }
     public void DebugButton()
     {
         Debug.Log("デバッグモードが開始されました。");
