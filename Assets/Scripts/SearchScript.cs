@@ -190,9 +190,10 @@ public class SearchScript : MonoBehaviour {
             List<string> SearchCategory = new List<string>{"0401003", "0401002", "0401009", "0401008", "0401001", "0401007", "0401006", "0401004", "0401005", "0401017",};
             float[] distances = {11f, 5.3f, 2.6f, 1.6f, 0.9f, 0.4f, 0.2f};
 
-            string appid = "XXXXXXXXXXXXXXXXXXXX";
-            string staticmap_url = "https://map.yahooapis.jp/map/V1/static?appid=" + appid + "&lat=" + lat + "&lon=" + lon + "&z=" + ((int)Math.Floor(z_MapSlider.value)).ToString() + "&pointer=on&width=750&height=750";
-            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + appid + "&gc=" + SearchCategory[CategoryDropdown.value] + "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=" + distances[(int)Math.Floor(z_MapSlider.value) - 13].ToString() + "&output=json&results=7&detail=full&sort=dist";  
+            string appid_staticmap = "XXXXXXXXXXXXXXXXXXXX";
+            string appid_yolp = "XXXXXXXXXXXXXXXXXXXX";
+            string staticmap_url = "https://map.yahooapis.jp/map/V1/static?appid=" + appid_staticmap + "&lat=" + lat + "&lon=" + lon + "&z=" + ((int)Math.Floor(z_MapSlider.value)).ToString() + "&pointer=on&width=750&height=750&autoscale=off";
+            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + appid_yolp + "&gc=" + SearchCategory[CategoryDropdown.value] + "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=" + distances[(int)Math.Floor(z_MapSlider.value) - 13].ToString() + "&output=json&results=7&detail=full&sort=dist";  
             print(distances[(int)Math.Floor(z_MapSlider.value) - 13]);
             if (OpenNow.isOn) yolp_url += "&open=now";
 
@@ -250,7 +251,6 @@ public class SearchScript : MonoBehaviour {
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(1);
         SocialConnector.SocialConnector.Share ("現在地周辺の病院のデータ", "", Application.persistentDataPath + "/image.png");
-        print("aaaa");
     }
     public void DialogManage(string mes)
     {
