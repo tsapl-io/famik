@@ -676,6 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1f10322af68048e58bed71099ae0860, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SearchButton: {fileID: 1511897544}
 --- !u!224 &633327497 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224822924060506070, guid: 7ce91678f5b4e4ba6b463f706dfdce02,
@@ -1144,7 +1145,7 @@ Prefab:
     - target: {fileID: 114891402059387372, guid: 7ce91678f5b4e4ba6b463f706dfdce02,
         type: 2}
       propertyPath: m_Text
-      value: "\u30E6\u30FC\u30B6\u30FC\u767B\u9332"
+      value: "\u30E6\u30FC\u30B6\u30FC\u767B\u9332 / \u524A\u9664"
       objectReference: {fileID: 0}
     - target: {fileID: 1833751209351820, guid: 7ce91678f5b4e4ba6b463f706dfdce02, type: 2}
       propertyPath: m_Name
@@ -1430,6 +1431,12 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1392180524}
   m_CullTransparentMesh: 0
+--- !u!114 &1511897544 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114273109160086266, guid: 7ce91678f5b4e4ba6b463f706dfdce02,
+    type: 2}
+  m_PrefabInternal: {fileID: 1563389296}
+  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 --- !u!1 &1528346198
 GameObject:
   m_ObjectHideFlags: 0

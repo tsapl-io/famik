@@ -61,15 +61,20 @@ public class GoogleVoiceSpeech : MonoBehaviour {
 	private int maxFreq;
 	private AudioSource goAudioSource;
 	void Start () {
-		if (Microphone.devices.Length <= 0) {
-			Debug.LogError("Speech: マイクが見つかりません");
-            isMicrophoneFound = false;
-		} else {
-			Microphone.GetDeviceCaps(null, out minFreq, out maxFreq);
-			if(minFreq == 0 && maxFreq == 0) maxFreq = 44100;
-			goAudioSource = this.GetComponent<AudioSource>();
-            isMicrophoneFound = true;
-		}
+        if (Application.internetReachability == NetworkReachability.NotReachable) {
+            RecordButton.interactable = false;
+            RecordButton_Text.text = "インターネット接続なし";
+        } else {
+            if (Microphone.devices.Length <= 0) {
+    			Debug.LogError("Speech: マイクが見つかりません");
+                isMicrophoneFound = false;
+    		} else {
+    			Microphone.GetDeviceCaps(null, out minFreq, out maxFreq);
+    			if(minFreq == 0 && maxFreq == 0) maxFreq = 44100;
+    			goAudioSource = this.GetComponent<AudioSource>();
+                isMicrophoneFound = true;
+    		}
+        }
   	}
 
     public void RecordButtonPush()
@@ -143,7 +148,6 @@ public class GoogleVoiceSpeech : MonoBehaviour {
                 DialogObject_Time.UpdateBar(0, 3);
                 DialogObject.SetActive(false);
                 DialogObject_Time.UpdateBar(0, 3);
-                FeverSpeechResult = 0;
             }
 
             RecordButton.interactable = true;
@@ -189,8 +193,11 @@ public class GoogleVoiceSpeech : MonoBehaviour {
 
     public void InputFieldTextAttach()
     {
-        FeverSpeechResult = float.Parse(ResultText.text);
-
+        if (!string.IsNullOrEmpty(ResultText.text)) {
+            FeverSpeechResult = float.Parse(ResultText.text);
+        } else {
+            FeverSpeechResult = 0f;
+        }
     }
 }
 		

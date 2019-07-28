@@ -137,7 +137,7 @@ public class RegisterScript : MonoBehaviour {
         } else {
             if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult <= 35 && GetComponent<GoogleVoiceSpeech>().FeverSpeechResult != 0) {
                 StartCoroutine(CompleteBack("異常に体温が低すぎます。\nもう一度やり直してください。"));
-            } else if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult >= 41) {
+            } else if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult >= 42) {
                 StartCoroutine(CompleteBack("異常に体温が高すぎます。\n例:「39.0」\nもう一度やり直してください。"));
             } else {
                 SaveData inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA"));

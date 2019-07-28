@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MainSceneScript : MonoBehaviour {
-
+    public UnityEngine.UI.Button SearchButton;
 	// Use this for initialization
 	void Start () {
-		
-	}
+		if (Application.internetReachability == NetworkReachability.NotReachable) {
+            SearchButton.interactable = false;
+            SearchButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "インターネット接続なし";
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {

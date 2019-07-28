@@ -54,7 +54,7 @@ public class GraphScript : MonoBehaviour
 
     public void Start() 
     {
-        if (PlayerPrefs.GetString("Famik", "NO DATA") != "NO DATA") {
+        if (PlayerPrefs.GetString("Famik", "NO DATA") != "NO DATA" && JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length != 0) {
 
             inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik"));
 

@@ -56,8 +56,10 @@ public class ShowScript : MonoBehaviour {
 
         SickTable = Instantiate(SickTableObject, GameObject.Find("Graphs").transform).GetComponent<TableLayout>();
 
+
+        print(JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length);
         {
-        if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" || JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length == 0) {
+        if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" && JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length != 0) {
             StartCoroutine(PleaseRegisterData(false));
         } else {
             int g = 0;
