@@ -84,8 +84,8 @@ public class FreeSearchScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
-        for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
+	      for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
+        //for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         for (int i = 0; i < HPButtons2.Count; i++) { HPButtons2[i].gameObject.SetActive(false); }
         StartCoroutine(Gps_Auto());
         SearchButton.onClick.AddListener(() => {
@@ -93,7 +93,7 @@ public class FreeSearchScript : MonoBehaviour {
         });
         StartCoroutine(Search_Stars());
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if (isRunning)
@@ -128,7 +128,7 @@ public class FreeSearchScript : MonoBehaviour {
             }
             if (maxWait < 1) {
                 DialogManage("タイムアウトしました。もう一度やり直してください。");
-                isRunning = false;          
+                isRunning = false;
                 yield break;
             }
             if (Input.location.status != LocationServiceStatus.Failed) {
@@ -151,13 +151,13 @@ public class FreeSearchScript : MonoBehaviour {
 
         SearchResultPanel.SetActive(true);
         NameAndTel.text = "";
-        for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
+        for (int i = 0; i < HPButtons2.Count; i++) { HPButtons2[i].gameObject.SetActive(false); }
         for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].gameObject.SetActive(false); }
         for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
 
         if (Input.location.status == LocationServiceStatus.Failed) {
             DialogManage("ただいま位置情報を取得できません。");
-            isRunning = false;          
+            isRunning = false;
             yield break;
         } else {
 
@@ -219,7 +219,11 @@ public class FreeSearchScript : MonoBehaviour {
 
     IEnumerator Search_Stars()
     {
-        if( isRunning ) { yield break; }
+        #region FreeSearchには2019/07/30からかかりつけ医を表示しなくなりました
+        yield break;
+        #endregion
+
+        if ( isRunning ) { yield break; }
         isRunning = true;
 
         for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
@@ -292,7 +296,7 @@ public class FreeSearchScript : MonoBehaviour {
         {
             starJson = JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
             //for (int i = 0; i < starJson.Stars.Length; i++) print(starJson.Stars[i]);
-            if (starJson.Stars.Length <= 5) {
+            if (starJson.Stars.Length <= 6) {
                 print(starJson.Stars.Length);
                 if (starJson.Stars.Length == 0) Array.Resize(ref starJson.Stars, 1); else Array.Resize(ref starJson.Stars, starJson.Stars.Length + 1);
                 print(ApiResponse.Feature.Length + "  " + number);

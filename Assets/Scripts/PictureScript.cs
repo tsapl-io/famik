@@ -9,7 +9,7 @@ public class PictureScript : MonoBehaviour {
 
     [Header("外部参照用変数")]
     public bool isPictureSaved;
-    public string ImageBase64;
+    public byte[] ImageBytes;
 
     [Header("スクリプト内部変数")]
     WebCamTexture webCamTexture;
@@ -21,6 +21,7 @@ public class PictureScript : MonoBehaviour {
     public GameObject CompleteShot;
 
     Texture2D texture2d;
+    Texture TempTexture;
 
     public static Texture2D ToTexture2D( Texture self )
     {
@@ -44,19 +45,12 @@ public class PictureScript : MonoBehaviour {
         texture2d.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
         texture2d.Apply();
     }
-    public string ImageBase64Get(Texture texture){
-        webCamTexture.Play();
-        Texture TempTexture = webCamTexture;
-        webCamTexture.Stop();
-
-        texture2d = ToTexture2D(TempTexture);
-        StartCoroutine(Wait());
-
-        return System.Convert.ToBase64String(texture2d.EncodeToJPG());
-    }
-
 
     public void Start () {
+        #if UNITY_ANDROID
+        TemporaryPicture.GetComponent<RectTransform>().localScale = new Vector3(-1, -1, 1);
+        SimplePreviewPicture.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        #endif
         int DeviceNumber = 0;
         for (int i = 0; i < WebCamTexture.devices.Length; i++) {
             if (!WebCamTexture.devices[i].isFrontFacing)
@@ -66,17 +60,17 @@ public class PictureScript : MonoBehaviour {
             }
         }
 
-        webCamTexture = new WebCamTexture(WebCamTexture.devices[DeviceNumber].name);
+        webCamTexture = new WebCamTexture(WebCamTexture.devices[DeviceNumber].name, 640, 480);
         TemporaryPicture.texture = webCamTexture;
         webCamTexture.Play();
     }
 
+    /*
     public void PictureShotButton () {
         isPictureSaved = true;
         // AudioServicesPlaySystemSound(1108);
 
         Texture TempTexture = webCamTexture;
-        webCamTexture.Stop();
         TemporaryPicture.texture = TempTexture;
         SimplePreviewPicture.texture = TempTexture;
 
@@ -84,14 +78,73 @@ public class PictureScript : MonoBehaviour {
 
         StartCoroutine(HidePictureDialogWith3Seconds());
     }
+    public string ImageBase64Get(Texture texture){
+        Texture TempTexture = webCamTexture;
+
+        texture2d = ToTexture2D(TempTexture);
+        StartCoroutine(Wait());
+
+        string returnTmp = System.Convert.ToBase64String(texture2d.EncodeToJPG());
+        webCamTexture.Stop();
+        return returnTmp;
+    }
+    */
     public void ShowPictureDialog()
     {
         CompleteShot.SetActive(false);
         PictureDialog.SetActive(true);
         Start();
     }
+
+
+
+
+
+
+    public void PictureShotButton () {
+        isPictureSaved = true;
+
+    		ImageBytes = SaveToPNGFile(webCamTexture.GetPixels());
+
+        TempTexture = webCamTexture;
+
+        #if UNITY_IOS
+        TemporaryPicture.GetComponent<RectTransform>().localScale = new Vector3(-1, -1, 1);
+        SimplePreviewPicture.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        #endif
+
+    		webCamTexture.Stop();
+
+        StartCoroutine(HidePictureDialogWith3Seconds());
+    }
+
+  	byte[] SaveToPNGFile( Color[] texData ) {
+    		Texture2D takenPhoto = new Texture2D(webCamTexture.width, webCamTexture.height, TextureFormat.ARGB32, false);
+
+    		takenPhoto.SetPixels(texData);
+    		takenPhoto.Apply();
+
+    		byte[] png = takenPhoto.EncodeToPNG();
+    		Destroy(takenPhoto);
+    		return png;
+  	}
+
+
+
+
+
+
+
+
     IEnumerator HidePictureDialogWith3Seconds ()
     {
+        yield return new WaitForEndOfFrame();
+        var texture = new Texture2D(1, 1);
+        texture.LoadImage(ImageBytes);
+
+        TemporaryPicture.texture = texture;
+        SimplePreviewPicture.texture = texture;
+
         CompleteShot.SetActive(true);
         if (!Application.HasUserAuthorization(UserAuthorization.WebCam)){
             CompleteShot.GetComponentInChildren<Text>().text = "権限がありません";

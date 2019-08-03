@@ -35,6 +35,11 @@ public class SceneMover : MonoBehaviour {
         SceneManager.LoadScene("Search_NoFree");
 
     }
+    public void ToStars()
+    {
+        SceneManager.LoadScene("Search_Stars");
+
+    }
     public void DebugButton()
     {
         Debug.Log("デバッグモードが開始されました。");

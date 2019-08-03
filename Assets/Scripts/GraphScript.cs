@@ -74,11 +74,15 @@ public class GraphScript : MonoBehaviour
             print(lineLabels.Count);
 
             dataSet = new ChartData2D();
+            //#if DEBUG
+            //dataSet[1, 0] = 40.0f;
+            //#else
             for (int i = 0; i < inStorageData.Humans[HumanDropdown.value].OneSicks.Length; i++)
             {
                 dataSet[0, i] = float.NaN;
                 dataSet[1, i] = float.Parse(inStorageData.Humans[HumanDropdown.value].OneSicks[i].Fever);
             }
+            //#endif
 
             lineChart.SetValues(ref dataSet);
 

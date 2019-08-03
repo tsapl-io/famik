@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,17 +41,13 @@ public class ShowScript : MonoBehaviour {
 
     public GameObject SickTableObject;
 
-    public CP.ProChart.LineChart lineChart;
-
-    public GraphScript graphscript;
-
     TableRow row;
     TableCell cell;
 
     public void Start()
     {
         if (SickTable != null) Destroy(SickTable.gameObject);
-        graphscript.Start();
+        GetComponent<GraphScript>().Start();
 
         HumanSelect.ClearOptions();
 
@@ -61,6 +58,8 @@ public class ShowScript : MonoBehaviour {
         {
         if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" && JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length != 0) {
             StartCoroutine(PleaseRegisterData(false));
+        } else if (JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV < FamikDatas.FamikDataVersion) {
+            StartCoroutine(OldDataVersion());
         } else {
             int g = 0;
             int o = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik")).Humans.Length;
@@ -68,7 +67,7 @@ public class ShowScript : MonoBehaviour {
             {
                 if (JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans[i].OneSicks.Length == 0) g++;
             }
-            if (o == g) //全部なかったら(データない人が全員の数と一致したら) 
+            if (o == g) //全部なかったら(データない人が全員の数と一致したら)
             {
                 StartCoroutine(PleaseRegisterData(true));
             } else {
@@ -92,7 +91,7 @@ public class ShowScript : MonoBehaviour {
                 for (int i = 0; i < SickTable.Rows.Count; i++)
                 {
                     Destroy(SickTable.Rows[i].gameObject);
-                    
+
                 }
 
                 row = SickTable.AddRow();
@@ -109,11 +108,11 @@ public class ShowScript : MonoBehaviour {
                         minutstemp = inStorageData.Humans[HumanSelect.value].OneSicks[i].Time.Minute.ToString();
 
                     }
-                    cell.GetComponentInChildren<Text>().text = inStorageData.Humans[HumanSelect.value].OneSicks[i].Time.Month + "月" + inStorageData.Humans[HumanSelect.value].OneSicks[i].Time.Day + "日 " + inStorageData.Humans[HumanSelect.value].OneSicks[i].Time.Hour + ":" + minutstemp;
+                    cell.GetComponentInChildren<Text>().text = inStorageData.Humans[HumanSelect.value].OneSicks[i].Time.Month + "/" + inStorageData.Humans[HumanSelect.value].OneSicks[i].Time.Day + " " + inStorageData.Humans[HumanSelect.value].OneSicks[i].Time.Hour + ":" + minutstemp;
                 }
                 /*
                  SickTable サイズ自動調整プログラム
-                    
+
                  float y = SickTable.GetComponent<RectTransform>().sizeDelta.y;
                  SickTable.GetComponent<RectTransform>().sizeDelta = new Vector2(200 * SickTable.Rows[0].Cells.Count, y);
                 */
@@ -122,7 +121,7 @@ public class ShowScript : MonoBehaviour {
                     row = SickTable.AddRow();
                     for (int s = 0; s < inStorageData.Humans[HumanSelect.value].OneSicks.Length; s++) {
                         cell = row.AddCell();
-                        
+
                         UnityEngine.Object a = Instantiate(background, cell.gameObject.transform);
                         int r = 0;
                         switch (i)
@@ -176,7 +175,7 @@ public class ShowScript : MonoBehaviour {
                                 }
                                 break;
                         }
-                        if (cell.GetComponentInChildren<RawImage>().color == Color.white) Destroy(a);        
+                        if (cell.GetComponentInChildren<RawImage>().color == Color.white) Destroy(a);
                     }
                 }
 
@@ -212,7 +211,7 @@ public class ShowScript : MonoBehaviour {
                             OpenDialog(false, rr);
                         });
                     }
-                    
+
                 }
 
     }
@@ -237,25 +236,6 @@ public class ShowScript : MonoBehaviour {
         overRow = row;
         overColumn = column;
     }
-    /*
-    //[Obsolete]
-    void Update()
-    {
-        tooltip.gameObject.SetActive(overRow != -1);
-        if (overRow != -1)
-        {
-            if (Input.mousePosition.x < 170) {
-                tooltip.anchoredPosition = (Vector2)Input.mousePosition + new Vector2(0, 30) + tooltip.sizeDelta * tooltip.localScale.x / 2;
-            } else {
-                tooltip.anchoredPosition = (Vector2)Input.mousePosition + new Vector2(0, 30) - new Vector2(180, -105);
-            }
-            if (inStorageData.Humans[HumanSelect.value].OneSicks[overColumn].Time.TimeZone == 0) TimeZoneTemp = "夜中";
-            if (inStorageData.Humans[HumanSelect.value].OneSicks[overColumn].Time.TimeZone == 1) TimeZoneTemp = "朝";
-            if (inStorageData.Humans[HumanSelect.value].OneSicks[overColumn].Time.TimeZone == 2) TimeZoneTemp = "昼";
-            if (inStorageData.Humans[HumanSelect.value].OneSicks[overColumn].Time.TimeZone == 3) TimeZoneTemp = "夜";
-            tooltipText.text = string.Format("{1}月{2}日 {3}\n{0}℃", ChartData[0, overColumn].ToString("F1"), inStorageData.Humans[HumanSelect.value].OneSicks[overColumn].Time.Month, inStorageData.Humans[HumanSelect.value].OneSicks[overColumn].Time.Day, TimeZoneTemp);
-        }
-    }*/
     public void Share()
     {
         StartCoroutine(ShareButton());
@@ -268,6 +248,22 @@ public class ShowScript : MonoBehaviour {
         SocialConnector.SocialConnector.Share ("Famik " + inStorageData.Humans[HumanSelect.value].Name + "のデータ", "", Application.persistentDataPath + "/image.png");
         print("aaaa");
     }
+    IEnumerator OldDataVersion()
+    {
+        DialogObject_Text.text = "Famikデータ形式が古いため、\n読み込めませんでした。\nアプリバージョン: " + FamikDatas.FamikDataVersion + "\nデータバージョン: " + JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV;
+        DialogObject.SetActive(true);
+        DialogObject_Time.UpdateBar(3, 3);
+        yield return new WaitForSeconds(1);
+        DialogObject_Time.UpdateBar(2, 3);
+        yield return new WaitForSeconds(1);
+        DialogObject_Time.UpdateBar(1, 3);
+        yield return new WaitForSeconds(1);
+        DialogObject_Time.UpdateBar(0, 3);
+        DialogObject.SetActive(false);
+        DialogObject_Time.UpdateBar(0, 3);
+        SceneManager.LoadScene("Main");
+
+    }
 
     public void OpenDialog(bool PictureDialog, int i)
     {
@@ -275,10 +271,23 @@ public class ShowScript : MonoBehaviour {
         if (PictureDialog)
         {
             OtherText.gameObject.SetActive(false);
+            /*
             var texture = new Texture2D(1, 1);
             byte[] bytes = Convert.FromBase64String(inStorageData.Humans[HumanSelect.value].OneSicks[i].Image);
             texture.LoadImage(bytes);
+            */
+            string FileName = inStorageData.Humans[HumanSelect.value].OneSicks[i].Image + ".famikimage";
+            byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FileName);
+
+
+            var texture = new Texture2D(1, 1);
+            texture.LoadImage(bytes);
             ImageDialog.texture = texture;
+            #if UNITY_ANDROID
+            ImageDialog.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            #elif UNITY_IOS
+            ImageDialog.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            #endif
         }
         else
         {

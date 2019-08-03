@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Search_Free.unity
     guid: ffe745aad737842feaa2b804abe3e038
   - enabled: 1
+    path: Assets/Scenes/Search_Stars.unity
+    guid: 07f1aa68e5851421bbc2306adbb7dafc
+  - enabled: 1
     path: Assets/Scenes/Debug.unity
     guid: 175da64c027f7473f8e5a19da73d5284
   m_configObjects: {}

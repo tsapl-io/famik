@@ -18,12 +18,12 @@ public class DebugModeScript : MonoBehaviour {
     int LogNumLines;
 	// Use this for initialization
 	void Start () {
-		
+
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 
     public void pushsocial()
@@ -91,7 +91,7 @@ public class DebugModeScript : MonoBehaviour {
     }
 
     public void OneHumanAdd() {
-        PlayerPrefs.SetString("Famik", "{\"Humans\":[{\"Name\": \"未設定\", \"OneSicks\": []}]}");
+        PlayerPrefs.SetString("Famik", "{\"Humans\":[{\"Name\": \"未設定\", \"OneSicks\": []}], \"FDV\": " + FamikDatas.FamikDataVersion + "}");
         LogOutput("全データリセットを実行し、登録できる状態にしました。");
     }
     public void AllDataRemove()
@@ -101,7 +101,7 @@ public class DebugModeScript : MonoBehaviour {
     }
     public void InsertTestData()
     {
-        PlayerPrefs.SetString("Famik", "{\"Humans\":[{\"Name\":\"A\",\"OneSicks\":[]},{\"Name\":\"B\",\"OneSicks\":[]},{\"Name\":\"C\",\"OneSicks\":[]}]}");
+        PlayerPrefs.SetString("Famik", "{\"Humans\":[{\"Name\":\"A\",\"OneSicks\":[]},{\"Name\":\"B\",\"OneSicks\":[]},{\"Name\":\"C\",\"OneSicks\":[]}], \"FDV\": " + FamikDatas.FamikDataVersion + "}");
         LogOutput("テストデータを挿入しました。");
     }
 
@@ -121,13 +121,13 @@ public class DebugModeScript : MonoBehaviour {
     {
         if (PlayerPrefs.GetString("Famik", "NO DATA") != "NO DATA") {
             SaveData inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "{}"));
-            for (int i = 0; i < inStorageData.Humans.Length; i++)
+            /*for (int i = 0; i < inStorageData.Humans.Length; i++)
             {
                 for (int s = 0; s < inStorageData.Humans[i].OneSicks.Length; s++)
                 {
                     inStorageData.Humans[i].OneSicks[s].Image = "...";
                 }
-            }
+            }*/
             LogOutput(ToReadable(JsonUtility.ToJson(inStorageData)));
         } else {
             LogOutput("データがありません");

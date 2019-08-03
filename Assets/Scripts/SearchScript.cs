@@ -26,6 +26,7 @@ public class Y_Propety
 {
     public string Tel1;
     public Y_Detail Detail;
+    public string Uid;
 }
 [Serializable]
 public class Y_Detail
@@ -46,7 +47,11 @@ public class Y2_ResultInfo
 
 public class SearchScript : MonoBehaviour {
 
+    public List<Button> StarButtons;
     public List<Button> HPButtons = new List<Button> {};
+
+    public Texture unStar;
+    public Texture Star;
 
     bool isRunning = false;
     float lat;
@@ -61,7 +66,7 @@ public class SearchScript : MonoBehaviour {
     public Text NameAndTel;
     //0401003
 
-
+    StarJson starJson;
     Y_YDF ApiResponse;
     Y2_YDF ApiResponse2;
 
@@ -84,10 +89,11 @@ public class SearchScript : MonoBehaviour {
 
         print(str);
         */
+
         for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         StartCoroutine(GpsGet());
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if (isRunning)
@@ -138,6 +144,7 @@ public class SearchScript : MonoBehaviour {
 
     IEnumerator GpsGet()
     {
+        for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
         for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         #if UNITY_EDITOR
             lat = 35.680914f;
@@ -159,7 +166,7 @@ public class SearchScript : MonoBehaviour {
             }
             if (maxWait < 1) {
                 DialogManage("タイムアウトしました。もう一度やり直してください。");
-                isRunning = false;          
+                isRunning = false;
                 yield break;
             }
             if (Input.location.status != LocationServiceStatus.Failed) {
@@ -179,9 +186,12 @@ public class SearchScript : MonoBehaviour {
         if( isRunning ) { yield break; }
         isRunning = true;
 
+        for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].gameObject.SetActive(false); }
+        for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
+
         if (Input.location.status == LocationServiceStatus.Failed) {
             DialogManage("ただいま位置情報を取得できません。");
-            isRunning = false;          
+            isRunning = false;
             yield break;
         } else {
             Maps.texture = new Texture2D(0, 0);
@@ -192,7 +202,7 @@ public class SearchScript : MonoBehaviour {
             float[] distances = {11f, 5.3f, 2.6f, 1.6f, 0.9f, 0.4f, 0.2f};
 
             string staticmap_url = "https://map.yahooapis.jp/map/V1/static?appid=" + AppId.SearchNoFree_StaticMap + "&lat=" + lat + "&lon=" + lon + "&z=" + ((int)Math.Floor(z_MapSlider.value)).ToString() + "&pointer=on&width=750&height=750&autoscale=off";
-            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchNoFree_YOLP + "&gc=" + SearchCategory[CategoryDropdown.value] + "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=" + distances[(int)Math.Floor(z_MapSlider.value) - 13].ToString() + "&output=json&results=7&detail=full&sort=dist";  
+            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchNoFree_YOLP + "&gc=" + SearchCategory[CategoryDropdown.value] + "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=" + distances[(int)Math.Floor(z_MapSlider.value) - 13].ToString() + "&output=json&results=7&detail=full&sort=dist";
             print(distances[(int)Math.Floor(z_MapSlider.value) - 13]);
             if (OpenNow.isOn) yolp_url += "&open=now";
 
@@ -204,16 +214,16 @@ public class SearchScript : MonoBehaviour {
                 yield return new WaitForEndOfFrame();
 
                 print(www.text);
-                
+
                 isRunning = false;
-                
+
                 if (ApiResponse2.ResultInfo.Count != 0)
                 {
 
                     ApiResponse = JsonUtility.FromJson<Y_YDF>(www.text);
 
                     yield return new WaitForEndOfFrame();
-                    
+
                     print(ApiResponse2.ResultInfo.Count);
                     for (int i = 0; i < ApiResponse2.ResultInfo.Count; i++) {
                         string[] arr = ApiResponse.Feature[i].Geometry.Coordinates.Split(',');
@@ -222,6 +232,20 @@ public class SearchScript : MonoBehaviour {
                         string temp2 = ApiResponse.Feature[i].Name;
                         if (temp2.Length > 15) temp2 = temp2.Substring(0, 15) + "...";
                         NameAndTel.text += temp + ": " + temp2 + "\n";
+                    }
+
+                    for (int i = 0; i < ApiResponse2.ResultInfo.Count; i++) {
+                        starJson = JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
+
+                        StarButtons[i].gameObject.SetActive(true);
+
+                        print(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
+                        int s = 0;
+                        for (s = 0; s < starJson.Stars.Length; s++) {
+                            if (starJson.Stars[s] == ApiResponse.Feature[i].Property.Uid) {
+                                StarButtons[i].GetComponent<RawImage>().texture = Star;
+                            }
+                        }
                     }
 
                     for (int s = 0; s < ApiResponse.Feature.Length; s++) { HPButtons[s].gameObject.SetActive(true); }
@@ -240,6 +264,42 @@ public class SearchScript : MonoBehaviour {
         }
     }
 
+
+    public void PushStarButton(int number)
+    {
+        if (StarButtons[number].GetComponent<RawImage>().texture == unStar)
+        {
+            starJson = JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
+            //for (int i = 0; i < starJson.Stars.Length; i++) print(starJson.Stars[i]);
+            if (starJson.Stars.Length <= 5) {
+                print(starJson.Stars.Length);
+                if (starJson.Stars.Length == 0) Array.Resize(ref starJson.Stars, 1); else Array.Resize(ref starJson.Stars, starJson.Stars.Length + 1);
+                print(ApiResponse.Feature.Length + "  " + number);
+                print(string.Format("starJson.Stars({0})[{1}] = {2}", starJson.Stars.Length, starJson.Stars.Length - 1, ApiResponse.Feature[number].Property.Uid));
+                starJson.Stars[starJson.Stars.Length - 1] = ApiResponse.Feature[number].Property.Uid;
+                StarButtons[number].GetComponent<RawImage>().texture = Star;
+                print(JsonUtility.ToJson(starJson));
+                PlayerPrefs.SetString("Stars", JsonUtility.ToJson(starJson));
+            }
+        }
+        else
+        {
+            for (int i = 0; i < starJson.Stars.Length; i++) {
+                if (starJson.Stars[i] == ApiResponse.Feature[number].Property.Uid) {
+                    for (int s = 0; s < starJson.Stars.Length - i; s++) {
+                        if (s + i + 1 != starJson.Stars.Length) {
+                            starJson.Stars[s + i] = starJson.Stars[s + i + 1];
+                        }
+                        Array.Resize(ref starJson.Stars, starJson.Stars.Length - 1);
+                    }
+                }
+            }
+            PlayerPrefs.SetString("Stars", JsonUtility.ToJson(starJson));
+            print(JsonUtility.ToJson(starJson));
+            StarButtons[number].GetComponent<RawImage>().texture = unStar;
+        }
+
+    }
     public void Share()
     {
         StartCoroutine(ShareButton());
