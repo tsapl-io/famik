@@ -46,21 +46,19 @@ public class ShowScript : MonoBehaviour {
 
     public void Start()
     {
-        if (SickTable != null) Destroy(SickTable.gameObject);
-        GetComponent<GraphScript>().Start();
-
-        HumanSelect.ClearOptions();
-
-        SickTable = Instantiate(SickTableObject, GameObject.Find("Graphs").transform).GetComponent<TableLayout>();
-
-
-        print(JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length);
         {
-        if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" && JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length != 0) {
+          print(!PlayerPrefs.HasKey("Famik"));
+        if (!PlayerPrefs.HasKey("Famik") || (JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "{\"Humans\":[]}"))).Humans.Length == 0) {
             StartCoroutine(PleaseRegisterData(false));
         } else if (JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV < FamikDatas.FamikDataVersion) {
             StartCoroutine(OldDataVersion());
         } else {
+            if (SickTable != null) Destroy(SickTable.gameObject);
+            GetComponent<GraphScript>().Start();
+
+            HumanSelect.ClearOptions();
+
+            SickTable = Instantiate(SickTableObject, GameObject.Find("Graphs").transform).GetComponent<TableLayout>();
             int g = 0;
             int o = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik")).Humans.Length;
             for (int i = 0; i < o; i++)
@@ -117,7 +115,7 @@ public class ShowScript : MonoBehaviour {
                  SickTable.GetComponent<RectTransform>().sizeDelta = new Vector2(200 * SickTable.Rows[0].Cells.Count, y);
                 */
 
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < 8; i++) {
                     row = SickTable.AddRow();
                     for (int s = 0; s < inStorageData.Humans[HumanSelect.value].OneSicks.Length; s++) {
                         cell = row.AddCell();
@@ -128,7 +126,7 @@ public class ShowScript : MonoBehaviour {
                         {
                             case 0:
                                 if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Sneeze) {
-                                    cell.GetComponentInChildren<RawImage>().color = Color.red;
+                                    cell.GetComponentInChildren<RawImage>().color = new Color(0.9f, 0.5f, 0.3f);
                                     cell.GetComponentInChildren<RawImage>().GetComponentInChildren<Text>().text = "咳";
                                 } else {
                                     r++;
@@ -136,7 +134,7 @@ public class ShowScript : MonoBehaviour {
                                 break;
                             case 1:
                                 if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Dripping) {
-                                    cell.GetComponentInChildren<RawImage>().color = Color.cyan;
+                                    cell.GetComponentInChildren<RawImage>().color = new Color(0.5f, 0.5f, 0.9f);
                                     cell.GetComponentInChildren<RawImage>().GetComponentInChildren<Text>().text = "鼻水";
                                 } else {
                                     r++;
@@ -170,6 +168,22 @@ public class ShowScript : MonoBehaviour {
                                 if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Dizzy) {
                                     cell.GetComponentInChildren<RawImage>().color = Color.gray;
                                     cell.GetComponentInChildren<RawImage>().GetComponentInChildren<Text>().text = "めまい";
+                                } else {
+                                    r++;
+                                }
+                                break;
+                            case 6:
+                                if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Dizzy) {
+                                    cell.GetComponentInChildren<RawImage>().color = new Color(1f, 0.9f, 0.1f);
+                                    cell.GetComponentInChildren<RawImage>().GetComponentInChildren<Text>().text = "食欲なし";
+                                } else {
+                                    r++;
+                                }
+                                break;
+                            case 7:
+                                if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Dizzy) {
+                                    cell.GetComponentInChildren<RawImage>().color = new Color(0.6f, 0.5f, 0.3f);
+                                    cell.GetComponentInChildren<RawImage>().GetComponentInChildren<Text>().text = "発疹";
                                 } else {
                                     r++;
                                 }

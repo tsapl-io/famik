@@ -106,7 +106,7 @@ public class StarsScript : MonoBehaviour {
         print(ApiResponse3.Feature.Length);
         print(55 * ApiResponse3.Feature.Length);
         print(0 - 55 * ApiResponse3.Feature.Length);
-        YahooAPIImage.GetComponent<RectTransform>().anchoredPosition = new Vector2(YahooAPIImage.GetComponent<RectTransform>().anchoredPosition.x, 0 - (100 + (55 * ApiResponse3.Feature.Length)) + 30);
+        //YahooAPIImage.GetComponent<RectTransform>().anchoredPosition = new Vector2(YahooAPIImage.GetComponent<RectTransform>().anchoredPosition.x, 0 - (100 + (55 * ApiResponse3.Feature.Length)) + 30);
         isRunning = false;
     }
 

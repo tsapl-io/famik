@@ -59,8 +59,11 @@ public class PictureScript : MonoBehaviour {
 
             }
         }
-
-        webCamTexture = new WebCamTexture(WebCamTexture.devices[DeviceNumber].name, 640, 480);
+        #if UNITY_ANDROID
+        webCamTexture = new WebCamTexture(WebCamTexture.devices[DeviceNumber].name, 480, 640);
+        #elif UNITY_IOS
+        webCamTexture = new WebCamTexture(WebCamTexture.devices[DeviceNumber].name);
+        #endif
         TemporaryPicture.texture = webCamTexture;
         webCamTexture.Play();
     }

@@ -37,6 +37,8 @@ public class Symptoms {
     public bool SoreThroat;
     public bool StomachAche;
     public bool Dizzy;
+    public bool NoAppetite;
+    public bool Rash;
 }
 
 
@@ -51,7 +53,7 @@ public static class FamikDatas
     public static int FamikDataVersion{
         get
         {
-            return 3;
+            return 4;
 
         }
     }
@@ -70,6 +72,8 @@ SaveData                     [セーブデータをまとめるクラス]
                 SoreThroat   [喉が痛い]
                 StomachAche  [腹痛]
                 Dizzy        [めまい]
+                NoAppetite   [食欲なし]
+                Rash         [発疹]
             Time             [時間を入れるところ]
                 Month        [月]
                 Day          [日]
@@ -104,6 +108,8 @@ public class RegisterScript : MonoBehaviour {
     public Toggle SoreThroat;
     public Toggle StomachAche;
     public Toggle Dizzy;
+    public Toggle NoAppetite;
+    public Toggle Rash;
 
     [Header("その他入力欄")]
     public InputField Other;
@@ -154,7 +160,7 @@ public class RegisterScript : MonoBehaviour {
                 StartCoroutine(CompleteBack("Famikのセーブデータが10MBを超えているため、保存ができません。"));
             }
 
-            if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult == 0 && !Sneeze.isOn && !Dripping.isOn && !Headache.isOn && !SoreThroat.isOn && !StomachAche.isOn && !Dizzy.isOn && (Other.text == null || Other.text.Trim() == "") && !GetComponent<PictureScript>().isPictureSaved) {
+            if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult == 0 && !Sneeze.isOn && !Dripping.isOn && !Headache.isOn && !SoreThroat.isOn && !StomachAche.isOn && !Dizzy.isOn && !NoAppetite.isOn && !Rash.isOn && (Other.text == null || Other.text.Trim() == "") && !GetComponent<PictureScript>().isPictureSaved) {
                 StartCoroutine(CompleteBack(true));
             } else {
                 if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult <= 35 && GetComponent<GoogleVoiceSpeech>().FeverSpeechResult != 0) {
@@ -186,6 +192,8 @@ public class RegisterScript : MonoBehaviour {
                     inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Symptoms.SoreThroat = SoreThroat.isOn;
                     inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Symptoms.StomachAche = StomachAche.isOn;
                     inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Symptoms.Dizzy = Dizzy.isOn;
+                    inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Symptoms.NoAppetite = NoAppetite.isOn;
+                    inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Symptoms.Rash = Rash.isOn;
                     inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Other = Other.text;
                     if (GetComponent<PictureScript>().isPictureSaved) {
                         Guid guid = Guid.NewGuid();
