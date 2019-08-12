@@ -30,6 +30,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 
 
 [RequireComponent (typeof (AudioSource))]
@@ -50,6 +51,8 @@ public class GoogleVoiceSpeech : MonoBehaviour {
     [Header("状態を保存する変数")]
     public bool isMicrophoneFound;
     public float FeverSpeechResult;
+
+    public InputField debug;
 
 
 	struct ClipData
@@ -111,6 +114,7 @@ public class GoogleVoiceSpeech : MonoBehaviour {
             SavWav.Save (filePath, goAudioSource.clip);
             string Response;
             Response = HttpUploadFile ("https://speech.googleapis.com/v1/speech:recognize?&key=XXXXXXXXXXXXXXXXXXXX", filePath, "file", "audio/wav; rate=44100");
+            debug.text = ("Response: " + Response + "\n");
             var jsonresponse = SimpleJSON.JSON.Parse(Response);
             print(jsonresponse);
             File.Delete(filePath);
@@ -118,21 +122,85 @@ public class GoogleVoiceSpeech : MonoBehaviour {
 
             bool ErrorFlag = false;
 
-            try {
-                FeverSpeechResult = float.Parse(jsonresponse["results"][0]["alternatives"][0]["transcript"].ToString().Trim(new char[]{'"'}));
-            } catch (FormatException) {
+            if (jsonresponse == "{}") ErrorFlag = true;
+
+                        // 言った言葉 -> 認識した言葉、これを直すのがこの行のif文
+            string str = jsonresponse["results"][0]["alternatives"][0]["transcript"].ToString().Trim(new char[]{'"'});
+
+            if (str.IndexOf("三十") != -1) str = str.Replace("三十", "3");
+            if (str.IndexOf("四十") != -1) str = str.Replace("四十", "4");
+            if (str.IndexOf("零") != -1) str = str.Replace("零", "0");
+            if (str.IndexOf("一") != -1) str = str.Replace("一", "1");
+            if (str.IndexOf("二") != -1) str = str.Replace("二", "2");
+            if (str.IndexOf("三") != -1) str = str.Replace("三", "3");
+            if (str.IndexOf("四") != -1) str = str.Replace("四", "4");
+            if (str.IndexOf("五") != -1) str = str.Replace("五", "5");
+            if (str.IndexOf("六") != -1) str = str.Replace("六", "6");
+            if (str.IndexOf("七") != -1) str = str.Replace("七", "7");
+            if (str.IndexOf("八") != -1) str = str.Replace("八", "8");
+            if (str.IndexOf("九") != -1) str = str.Replace("九", "9");
+            if (str.IndexOf("１") != -1) str = str.Replace("１", "1");
+            if (str.IndexOf("２") != -1) str = str.Replace("２", "2");
+            if (str.IndexOf("３") != -1) str = str.Replace("３", "3");
+            if (str.IndexOf("４") != -1) str = str.Replace("４", "4");
+            if (str.IndexOf("５") != -1) str = str.Replace("５", "5");
+            if (str.IndexOf("６") != -1) str = str.Replace("６", "6");
+            if (str.IndexOf("７") != -1) str = str.Replace("７", "7");
+            if (str.IndexOf("８") != -1) str = str.Replace("８", "8");
+            if (str.IndexOf("９") != -1) str = str.Replace("９", "9");
+            if (str.IndexOf("０") != -1) str = str.Replace("０", "0");
+
+          //  if (!Regex.IsMatch(str, @"/[3-4][0-9]\.[0-9]/$")) {           // もし、○○.○のフォーマットじゃなかったら
+              if (str.IndexOf("度") != -1 && str.EndsWith("分")) {            // ○度○分 を数字に変換
+                str = str.Replace("度", ".");
+                str = str.TrimEnd('分');
+              } else if (str.EndsWith("°")) {                               // ○○度      -> ○○°
+                str = str.TrimEnd('°');
+              } else if (str.IndexOf("°") != -1 && str.EndsWith("部")) {     // ○○度○分    -> ○°○部
+                str = str.Replace("°", ".");
+                str = str.TrimEnd('部');
+              } else if (str.IndexOf("部") != -1 && str.EndsWith("部")) {    // ○○度○分    -> ○○部○部
+                str = str.Replace("部", ".");
+                str = str.TrimEnd('.');
+              } else if (str.EndsWith("摂氏温度")) {                         // ○○.○度    -> ○○.○摂氏温度
+                str = str.Replace("摂氏温度", "");
+              } else if (str.EndsWith("°キューブ")) {                        // ○○度9分   -> ○○°キューブ
+                str = str.Replace("°キューブ", ".9");
+              } else if (str.EndsWith(" CUBE")) {                           // ○○度9分   -> ○○ CUBE
+                str = str.Replace(" CUBE", ".9");
+              } else if (str.EndsWith("°レイヴ")) {                           // ○○度0分   -> ○○°レイヴ
+                str = str.Replace("°レイヴ", ".0");
+              } else if (str.IndexOf(".") != -1 && str.EndsWith("部")) {     // ○○.○分    -> ○○.○部
+                str = str.TrimEnd('部');
+              } else if (str.IndexOf("°c ") != -1 && str.EndsWith("分")) {   // ○○°c ○分  -> ○部○部
+                str = str.Replace("°c ", ".");
+                str = str.TrimEnd('分');
+              }
+              debug.text += ("str: " + str + "\n");
+              try {
+                if (!ErrorFlag) FeverSpeechResult = float.Parse(str);
+              } catch (FormatException) {
+                FeverSpeechResult = 0f;
+                ResultText.text = "";
                 DialogObject_Text.text = "体温ではない文字が認識されました。\n\nもう一度やり直してください。";
                 ErrorFlag = true;
-            } catch (Exception) {
-                DialogObject_Text.text = "大変申し訳ございません。\n\nもう一度やり直してください。";
-                ErrorFlag = true;
-            }
+              }
+            //}
             if (!ErrorFlag) {
-                if (FeverSpeechResult <= 35) {
+                if (FeverSpeechResult < 35) {
+                    FeverSpeechResult = 0f;
+                    ResultText.text = "";
                     DialogObject_Text.text = "異常に体温が低すぎます。\n\nもう一度やり直してください。";
                     ErrorFlag = true;
-                } else if (FeverSpeechResult >= 41) {
+                } else if (FeverSpeechResult > 42) {
+                    FeverSpeechResult = 0f;
+                    ResultText.text = "";
                     DialogObject_Text.text = "異常に体温が高すぎます。\n例:「39.0」\nもう一度やり直してください。";
+                    ErrorFlag = true;
+                }
+            } else {
+                if (jsonresponse == "{}") {
+                    DialogObject_Text.text = "申し訳ございません。\n認識できませんでした。";
                     ErrorFlag = true;
                 }
             }
@@ -177,13 +245,13 @@ public class GoogleVoiceSpeech : MonoBehaviour {
             }
 
             var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            
+
             using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
             {
                 var result = streamReader.ReadToEnd();
                 return result;
             }
-        
+
         } catch (WebException ex) {
             var resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
             Debug.Log(resp);
@@ -200,4 +268,3 @@ public class GoogleVoiceSpeech : MonoBehaviour {
         }
     }
 }
-		

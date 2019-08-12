@@ -173,7 +173,7 @@ public class ShowScript : MonoBehaviour {
                                 }
                                 break;
                             case 6:
-                                if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Dizzy) {
+                                if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.NoAppetite) {
                                     cell.GetComponentInChildren<RawImage>().color = new Color(1f, 0.9f, 0.1f);
                                     cell.GetComponentInChildren<RawImage>().GetComponentInChildren<Text>().text = "食欲なし";
                                 } else {
@@ -181,7 +181,7 @@ public class ShowScript : MonoBehaviour {
                                 }
                                 break;
                             case 7:
-                                if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Dizzy) {
+                                if (inStorageData.Humans[HumanSelect.value].OneSicks[s].Symptoms.Rash) {
                                     cell.GetComponentInChildren<RawImage>().color = new Color(0.6f, 0.5f, 0.3f);
                                     cell.GetComponentInChildren<RawImage>().GetComponentInChildren<Text>().text = "発疹";
                                 } else {

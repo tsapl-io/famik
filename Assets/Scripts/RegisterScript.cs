@@ -93,6 +93,8 @@ SaveData.Humans.OneSicks.Time.TimeZoneの数値について
 
 public class RegisterScript : MonoBehaviour {
 
+  public GameObject DebugDialog;
+
     [Header("人選択プルダウン")]
     public Dropdown HumanSelect;
     public List<string> HumanSelectOptions = new List<string> {};
@@ -120,6 +122,8 @@ public class RegisterScript : MonoBehaviour {
     public SimpleHealthBar DialogObject_Time;
 
     IEnumerator Start () {
+        if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugDialog.SetActive(true); else DebugDialog.SetActive(false);
+      print(Application.HasUserAuthorization(UserAuthorization.Microphone));
         if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" || JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length == 0) {
             DialogObject_Text.text = "ユーザー登録画面でユーザーを追加してください。\n\nタイトル画面に戻ります。";
     		DialogObject.SetActive(true);
@@ -163,9 +167,9 @@ public class RegisterScript : MonoBehaviour {
             if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult == 0 && !Sneeze.isOn && !Dripping.isOn && !Headache.isOn && !SoreThroat.isOn && !StomachAche.isOn && !Dizzy.isOn && !NoAppetite.isOn && !Rash.isOn && (Other.text == null || Other.text.Trim() == "") && !GetComponent<PictureScript>().isPictureSaved) {
                 StartCoroutine(CompleteBack(true));
             } else {
-                if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult <= 35 && GetComponent<GoogleVoiceSpeech>().FeverSpeechResult != 0) {
+                if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult < 35.0f && GetComponent<GoogleVoiceSpeech>().FeverSpeechResult != 0) {
                     StartCoroutine(CompleteBack("異常に体温が低すぎます。\nもう一度やり直してください。"));
-                } else if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult >= 42) {
+                } else if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 42.0f) {
                     StartCoroutine(CompleteBack("異常に体温が高すぎます。\n例:「39.0」\nもう一度やり直してください。"));
                 } else {
                     SaveData inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA"));

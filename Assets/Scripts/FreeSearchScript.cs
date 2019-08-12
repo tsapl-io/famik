@@ -37,6 +37,7 @@ public class fY2_YDF
 public class fY2_ResultInfo
 {
     public int Count;
+    public int Total;
 }
 
 [Serializable]
@@ -64,6 +65,7 @@ public class FreeSearchScript : MonoBehaviour {
     public List<Button> HPButtons2;
 
     public InputField SearchBox;
+    public Toggle Condition1;
     public Button SearchButton;
 
     public Text NameAndTel;
@@ -72,6 +74,8 @@ public class FreeSearchScript : MonoBehaviour {
     public Text DialogText;
 
     public Text NameAndTelStar;
+
+    public GameObject MoreThan7Text;
 
     bool isRunning;
     float lat;
@@ -147,6 +151,8 @@ public class FreeSearchScript : MonoBehaviour {
         if( isRunning ) { yield break; }
         isRunning = true;
 
+        MoreThan7Text.SetActive(false);
+
         if (string.IsNullOrEmpty(SearchBox.text)) { isRunning = false; yield break; }
 
         SearchResultPanel.SetActive(true);
@@ -164,7 +170,13 @@ public class FreeSearchScript : MonoBehaviour {
             //List<string> SearchCategory = new List<string>{"0401003", "0401002", "0401009", "0401008", "0401001", "0401007", "0401006", "0401004", "0401005", "0401017",};
             //float[] distances = {11f, 5.3f, 2.6f, 1.6f, 0.9f, 0.4f, 0.2f};
 
-            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_SearchYOLP + "&gc=0401&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=20&output=json&results=7&detail=full&sort=dist&query=" + SearchBox.text;
+            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_SearchYOLP + "&gc=0401&output=json&results=7&detail=full&query=" + SearchBox.text;
+
+            if (Condition1.isOn) {
+                yolp_url += "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=20&sort=dist";
+            } else {
+                yolp_url += "&sort=kana";
+            }
 
             using (WWW www = new WWW(yolp_url))
             {
@@ -203,7 +215,9 @@ public class FreeSearchScript : MonoBehaviour {
                         NameAndTel.text += temp + ": " + temp2 + "\n";
                     }
 
-
+                    if (ApiResponse2.ResultInfo.Total > 7) {
+                        MoreThan7Text.SetActive(true);
+                    }
                 }
                 else
                 {

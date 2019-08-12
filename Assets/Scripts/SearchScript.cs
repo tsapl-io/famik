@@ -271,7 +271,7 @@ public class SearchScript : MonoBehaviour {
         {
             starJson = JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
             //for (int i = 0; i < starJson.Stars.Length; i++) print(starJson.Stars[i]);
-            if (starJson.Stars.Length <= 5) {
+            if (starJson.Stars.Length <= 6) {
                 print(starJson.Stars.Length);
                 if (starJson.Stars.Length == 0) Array.Resize(ref starJson.Stars, 1); else Array.Resize(ref starJson.Stars, starJson.Stars.Length + 1);
                 print(ApiResponse.Feature.Length + "  " + number);

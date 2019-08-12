@@ -7,35 +7,22 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class DebugModeScript : MonoBehaviour {
+    public Dropdown RequestTarget;
+
     public InputField WriteJSON;
     public GameObject WriteJSONDialog;
 
-    public InputField socialtext;
-    public InputField socialurl;
-    public InputField socialimageurl;
+    public Toggle DebugPanelShow_01;
 
     public Text DebugLog;
     int LogNumLines;
-	// Use this for initialization
-	void Start () {
 
-	}
-
-	// Update is called once per frame
-	void Update () {
-
-	}
-
-    public void pushsocial()
-    {
-        File.Delete("image.png");
-        ScreenCapture.CaptureScreenshot("image.png");
-        StartCoroutine(nume());
+    public void Start() {
+        if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugPanelShow_01.isOn = true; else DebugPanelShow_01.isOn = false;
     }
-    public IEnumerator nume()
-    {
-        yield return new WaitForEndOfFrame();
-        SocialConnector.SocialConnector.Share(socialtext.text, socialurl.text, socialimageurl.text);
+
+    public void ChangeDebugPanelShow_01 () {
+        if (DebugPanelShow_01.isOn) PlayerPrefs.SetInt("FamikSetting_RegisterDebugDialog", 1); else PlayerPrefs.SetInt("FamikSetting_RegisterDebugDialog", 0);
     }
 
     public static string ToReadable( string json )
@@ -91,6 +78,7 @@ public class DebugModeScript : MonoBehaviour {
     }
 
     public void OneHumanAdd() {
+        AllDataRemove();
         PlayerPrefs.SetString("Famik", "{\"Humans\":[{\"Name\": \"未設定\", \"OneSicks\": []}], \"FDV\": " + FamikDatas.FamikDataVersion + "}");
         LogOutput("全データリセットを実行し、登録できる状態にしました。");
     }
@@ -106,44 +94,43 @@ public class DebugModeScript : MonoBehaviour {
     }
 
     public void LogOutput(string Log)
-    {
+    {/*
         LogNumLines++;
         if (LogNumLines > 10) {
             DebugLog.text = "";
             LogNumLines = 0;
             LogOutput("ログを自動クリアしました。");
-        }
+        }*/
         Debug.Log(Log);
         DebugLog.text += Log + "\n";
     }
 
     public void LoadSaveJSON()
     {
-        if (PlayerPrefs.GetString("Famik", "NO DATA") != "NO DATA") {
-            SaveData inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "{}"));
-            /*for (int i = 0; i < inStorageData.Humans.Length; i++)
-            {
-                for (int s = 0; s < inStorageData.Humans[i].OneSicks.Length; s++)
-                {
-                    inStorageData.Humans[i].OneSicks[s].Image = "...";
-                }
-            }*/
-            LogOutput(ToReadable(JsonUtility.ToJson(inStorageData)));
-        } else {
-            LogOutput("データがありません");
+        if (RequestTarget.value == 0) {
+            LogOutput(ToReadable(PlayerPrefs.GetString("Famik", "{\"通知\":\"データがありません\"}")));
+        } else if (RequestTarget.value == 1) {
+            LogOutput(ToReadable(PlayerPrefs.GetString("Stars", "{\"通知\":\"データがありません\"}")));
         }
-
     }
 
     public void Write()
     {
         WriteJSONDialog.SetActive(false);
-        PlayerPrefs.SetString("Famik", WriteJSON.text);
+        if (RequestTarget.value == 0) {
+            PlayerPrefs.SetString("Famik", WriteJSON.text);
+        } else if (RequestTarget.value == 1) {
+            PlayerPrefs.SetString("Stars", WriteJSON.text);
+        }
         LogOutput("書き込みました。");
     }
     public void WriteDialogShow()
     {
         WriteJSONDialog.SetActive(true);
-        WriteJSON.text = PlayerPrefs.GetString("Famik");
+        if (RequestTarget.value == 0) {
+            WriteJSON.text = ToReadable(PlayerPrefs.GetString("Famik"));
+        } else if (RequestTarget.value == 1) {
+            WriteJSON.text = ToReadable(PlayerPrefs.GetString("Stars"));
+        }
     }
 }
