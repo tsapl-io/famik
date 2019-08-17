@@ -63,6 +63,7 @@ public class FreeSearchScript : MonoBehaviour {
     public List<Button> StarButtons;
     public List<Button> HPButtons;
     public List<Button> HPButtons2;
+    public Dropdown CategoryDropdown;
 
     public InputField SearchBox;
     public Toggle Condition1;
@@ -88,6 +89,9 @@ public class FreeSearchScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        CategoryDropdown.ClearOptions();
+        CategoryDropdown.AddOptions(new List<string>{"指定なし", "小児科", "内科", "耳鼻咽喉科", "皮膚科", "歯科", "眼科", "外科", "整形外科", "胃腸科", "呼吸器科",});
+
 	      for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
         //for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         for (int i = 0; i < HPButtons2.Count; i++) { HPButtons2[i].gameObject.SetActive(false); }
@@ -167,10 +171,10 @@ public class FreeSearchScript : MonoBehaviour {
             yield break;
         } else {
 
-            //List<string> SearchCategory = new List<string>{"0401003", "0401002", "0401009", "0401008", "0401001", "0401007", "0401006", "0401004", "0401005", "0401017",};
+            List<string> SearchCategory = new List<string>{"0401", "0401003", "0401002", "0401009", "0401008", "0401001", "0401007", "0401006", "0401004", "0401005", "0401017",};
             //float[] distances = {11f, 5.3f, 2.6f, 1.6f, 0.9f, 0.4f, 0.2f};
 
-            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_SearchYOLP + "&gc=0401&output=json&results=7&detail=full&query=" + SearchBox.text;
+            string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_SearchYOLP + "&gc=" + SearchCategory[CategoryDropdown.value] + "&output=json&results=15&detail=full&query=" + SearchBox.text;
 
             if (Condition1.isOn) {
                 yolp_url += "&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=20&sort=dist";
@@ -215,7 +219,7 @@ public class FreeSearchScript : MonoBehaviour {
                         NameAndTel.text += temp + ": " + temp2 + "\n";
                     }
 
-                    if (ApiResponse2.ResultInfo.Total > 7) {
+                    if (ApiResponse2.ResultInfo.Total > 20) {
                         MoreThan7Text.SetActive(true);
                     }
                 }
@@ -252,7 +256,7 @@ public class FreeSearchScript : MonoBehaviour {
             yield break;
         }
 
-        string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_StarsYOLP + "&gc=0401&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=20&output=json&results=10&sort=dist&detail=full";
+        string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_StarsYOLP + "&gc=0401&lat=" + lat.ToString() + "&lon=" + lon.ToString() + "&dist=20&output=json&results=15&sort=dist&detail=full";
         yolp_url += "&uid=";
         for (int i = 0; i < starJson2.Stars.Length; i++) {
             yolp_url += starJson2.Stars[i];
@@ -306,37 +310,21 @@ public class FreeSearchScript : MonoBehaviour {
 
     public void PushStarButton(int number)
     {
+        List<string> starList = new List<string>(JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}")).Stars);
         if (StarButtons[number].GetComponent<RawImage>().texture == unStar)
         {
-            starJson = JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
-            //for (int i = 0; i < starJson.Stars.Length; i++) print(starJson.Stars[i]);
-            if (starJson.Stars.Length <= 6) {
-                print(starJson.Stars.Length);
-                if (starJson.Stars.Length == 0) Array.Resize(ref starJson.Stars, 1); else Array.Resize(ref starJson.Stars, starJson.Stars.Length + 1);
-                print(ApiResponse.Feature.Length + "  " + number);
-                print(string.Format("starJson.Stars({0})[{1}] = {2}", starJson.Stars.Length, starJson.Stars.Length - 1, ApiResponse.Feature[number].Property.Uid));
-                starJson.Stars[starJson.Stars.Length - 1] = ApiResponse.Feature[number].Property.Uid;
+            if (starList.Count <= 6) {
+                starList.Add(ApiResponse.Feature[number].Property.Uid);
                 StarButtons[number].GetComponent<RawImage>().texture = Star;
-                print(JsonUtility.ToJson(starJson));
-                PlayerPrefs.SetString("Stars", JsonUtility.ToJson(starJson));
             }
         }
         else
         {
-            for (int i = 0; i < starJson.Stars.Length; i++) {
-                if (starJson.Stars[i] == ApiResponse.Feature[number].Property.Uid) {
-                    for (int s = 0; s < starJson.Stars.Length - i; s++) {
-                        if (s + i + 1 != starJson.Stars.Length) {
-                            starJson.Stars[s + i] = starJson.Stars[s + i + 1];
-                        }
-                        Array.Resize(ref starJson.Stars, starJson.Stars.Length - 1);
-                    }
-                }
-            }
-            PlayerPrefs.SetString("Stars", JsonUtility.ToJson(starJson));
-            print(JsonUtility.ToJson(starJson));
+            starList.Remove(ApiResponse.Feature[number].Property.Uid);
             StarButtons[number].GetComponent<RawImage>().texture = unStar;
         }
-
+        StarJson temporaryStarJson = new StarJson();//以下二行だけ
+        temporaryStarJson.Stars = starList.ToArray();
+        PlayerPrefs.SetString("Stars", JsonUtility.ToJson(temporaryStarJson));
     }
 }

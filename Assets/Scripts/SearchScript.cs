@@ -267,38 +267,22 @@ public class SearchScript : MonoBehaviour {
 
     public void PushStarButton(int number)
     {
+        List<string> starList = new List<string>(JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}")).Stars);
         if (StarButtons[number].GetComponent<RawImage>().texture == unStar)
         {
-            starJson = JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
-            //for (int i = 0; i < starJson.Stars.Length; i++) print(starJson.Stars[i]);
-            if (starJson.Stars.Length <= 6) {
-                print(starJson.Stars.Length);
-                if (starJson.Stars.Length == 0) Array.Resize(ref starJson.Stars, 1); else Array.Resize(ref starJson.Stars, starJson.Stars.Length + 1);
-                print(ApiResponse.Feature.Length + "  " + number);
-                print(string.Format("starJson.Stars({0})[{1}] = {2}", starJson.Stars.Length, starJson.Stars.Length - 1, ApiResponse.Feature[number].Property.Uid));
-                starJson.Stars[starJson.Stars.Length - 1] = ApiResponse.Feature[number].Property.Uid;
+            if (starList.Count <= 6) {
+                starList.Add(ApiResponse.Feature[number].Property.Uid);
                 StarButtons[number].GetComponent<RawImage>().texture = Star;
-                print(JsonUtility.ToJson(starJson));
-                PlayerPrefs.SetString("Stars", JsonUtility.ToJson(starJson));
             }
         }
         else
         {
-            for (int i = 0; i < starJson.Stars.Length; i++) {
-                if (starJson.Stars[i] == ApiResponse.Feature[number].Property.Uid) {
-                    for (int s = 0; s < starJson.Stars.Length - i; s++) {
-                        if (s + i + 1 != starJson.Stars.Length) {
-                            starJson.Stars[s + i] = starJson.Stars[s + i + 1];
-                        }
-                        Array.Resize(ref starJson.Stars, starJson.Stars.Length - 1);
-                    }
-                }
-            }
-            PlayerPrefs.SetString("Stars", JsonUtility.ToJson(starJson));
-            print(JsonUtility.ToJson(starJson));
+            starList.Remove(ApiResponse.Feature[number].Property.Uid);
             StarButtons[number].GetComponent<RawImage>().texture = unStar;
         }
-
+        StarJson temporaryStarJson = new StarJson();//以下二行だけ
+        temporaryStarJson.Stars = starList.ToArray();
+        PlayerPrefs.SetString("Stars", JsonUtility.ToJson(temporaryStarJson));
     }
     public void Share()
     {
