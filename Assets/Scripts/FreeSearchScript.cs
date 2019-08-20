@@ -56,7 +56,6 @@ public static class AppId {
 }
 
 public class FreeSearchScript : MonoBehaviour {
-    public GameObject SearchResultPanel;
 
     public Texture unStar;
     public Texture Star;
@@ -76,7 +75,7 @@ public class FreeSearchScript : MonoBehaviour {
 
     public Text NameAndTelStar;
 
-    public GameObject MoreThan7Text;
+    public Text MoreThan7Text;
 
     bool isRunning;
     float lat;
@@ -93,13 +92,17 @@ public class FreeSearchScript : MonoBehaviour {
         CategoryDropdown.AddOptions(new List<string>{"指定なし", "小児科", "内科", "耳鼻咽喉科", "皮膚科", "歯科", "眼科", "外科", "整形外科", "胃腸科", "呼吸器科",});
 
 	      for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
+        for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].gameObject.SetActive(false); }
         //for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
         for (int i = 0; i < HPButtons2.Count; i++) { HPButtons2[i].gameObject.SetActive(false); }
+        NameAndTel.text = "";
         StartCoroutine(Gps_Auto());
         SearchButton.onClick.AddListener(() => {
             StartCoroutine(Search_Auto());
         });
         StartCoroutine(Search_Stars());
+        MoreThan7Text.color = Color.black;
+        MoreThan7Text.text = "かかりつけ病院登録は15件までです";
 	}
 
 	// Update is called once per frame
@@ -150,16 +153,20 @@ public class FreeSearchScript : MonoBehaviour {
         #endif
     }
 
+    public void Search_Button() {
+      StartCoroutine(Search_Auto());
+    }
+
     IEnumerator Search_Auto()
     {
         if( isRunning ) { yield break; }
         isRunning = true;
 
-        MoreThan7Text.SetActive(false);
-
         if (string.IsNullOrEmpty(SearchBox.text)) { isRunning = false; yield break; }
 
-        SearchResultPanel.SetActive(true);
+        MoreThan7Text.color = Color.black;
+        MoreThan7Text.text = "かかりつけ病院登録は15件までです";
+
         NameAndTel.text = "";
         for (int i = 0; i < HPButtons2.Count; i++) { HPButtons2[i].gameObject.SetActive(false); }
         for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].gameObject.SetActive(false); }
@@ -219,13 +226,14 @@ public class FreeSearchScript : MonoBehaviour {
                         NameAndTel.text += temp + ": " + temp2 + "\n";
                     }
 
-                    if (ApiResponse2.ResultInfo.Total > 20) {
-                        MoreThan7Text.SetActive(true);
+                    if (ApiResponse2.ResultInfo.Total > 15) {
+                        MoreThan7Text.color = Color.red;
+                        MoreThan7Text.text = "検索結果が15件以上でした\n条件を絞ってください";
                     }
                 }
                 else
                 {
-                    NameAndTel.text = "検索結果は0件でした";
+                    NameAndTel.text = "\n\n     検索結果は0件でした";
 
                 }
 
@@ -292,7 +300,6 @@ public class FreeSearchScript : MonoBehaviour {
     }
     public void SearchResultHide()
     {
-        SearchResultPanel.SetActive(false);
         StartCoroutine(Search_Stars());
     }
     public void OpenURL_Search(int number)
@@ -313,7 +320,7 @@ public class FreeSearchScript : MonoBehaviour {
         List<string> starList = new List<string>(JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}")).Stars);
         if (StarButtons[number].GetComponent<RawImage>().texture == unStar)
         {
-            if (starList.Count <= 6) {
+            if (starList.Count <= 14) {
                 starList.Add(ApiResponse.Feature[number].Property.Uid);
                 StarButtons[number].GetComponent<RawImage>().texture = Star;
             }

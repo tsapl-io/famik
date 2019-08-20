@@ -69,7 +69,7 @@ public class StarsScript : MonoBehaviour {
             yield break;
         }
 
-        string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_StarsYOLP + "&output=json&results=10&detail=full";
+        string yolp_url = "https://map.yahooapis.jp/search/local/V1/localSearch?appid=" + AppId.SearchFree_StarsYOLP + "&output=json&results=20&detail=full";
         yolp_url += "&uid=";
         for (int i = 0; i < starJson2.Stars.Length; i++) {
             yolp_url += starJson2.Stars[i];

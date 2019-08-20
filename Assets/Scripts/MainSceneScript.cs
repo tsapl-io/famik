@@ -16,22 +16,24 @@ public class MainSceneScript : MonoBehaviour {
             SearchButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "インターネット接続なし";
         }
     }
-	
+
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 
 
     public void DebugClick()
     {
-        DebugClickCount++;
-        DebugResetCoroutine = StartCoroutine(WaitForResetCount());
-        if (DebugClickCount == 5)
-        {
-            StopCoroutine(DebugResetCoroutine);
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Debug");
-            DebugClickCount = 0;
+        if (Debug.isDebugBuild) {
+            DebugClickCount++;
+            DebugResetCoroutine = StartCoroutine(WaitForResetCount());
+            if (DebugClickCount == 5)
+            {
+                StopCoroutine(DebugResetCoroutine);
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Debug");
+                DebugClickCount = 0;
+            }
         }
     }
     IEnumerator WaitForResetCount()

@@ -270,7 +270,7 @@ public class SearchScript : MonoBehaviour {
         List<string> starList = new List<string>(JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}")).Stars);
         if (StarButtons[number].GetComponent<RawImage>().texture == unStar)
         {
-            if (starList.Count <= 6) {
+            if (starList.Count <= 14) {
                 starList.Add(ApiResponse.Feature[number].Property.Uid);
                 StarButtons[number].GetComponent<RawImage>().texture = Star;
             }
