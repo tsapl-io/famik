@@ -10,7 +10,13 @@ EditorBuildSettings:
     guid: fb305ed7f026749249f53880f920f200
   - enabled: 1
     path: Assets/Scenes/HumanManage.unity
+    guid: 504dd7f92285d42a88c0cf146fd6abab
+  - enabled: 1
+    path: Assets/Scenes/HumanManage_Register.unity
     guid: b0bfa581e46e1479fb887cdc5531d9e6
+  - enabled: 1
+    path: Assets/Scenes/HumanManage_Delete.unity
+    guid: 3193f31a181524c509dd917125bb5d66
   - enabled: 1
     path: Assets/Scenes/Register.unity
     guid: 673adbbe55ab1478a85ceb568405ea07

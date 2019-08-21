@@ -1451,7 +1451,7 @@ Prefab:
     - target: {fileID: 114891402059387372, guid: 7ce91678f5b4e4ba6b463f706dfdce02,
         type: 2}
       propertyPath: m_Text
-      value: "\u30E6\u30FC\u30B6\u30FC\u767B\u9332 / \u524A\u9664"
+      value: "\u30E6\u30FC\u30B6\u30FC\u7BA1\u7406"
       objectReference: {fileID: 0}
     - target: {fileID: 1833751209351820, guid: 7ce91678f5b4e4ba6b463f706dfdce02, type: 2}
       propertyPath: m_Name
@@ -2180,8 +2180,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 27, y: 547}
-  m_SizeDelta: {x: 743.85, y: 224.3}
+  m_AnchoredPosition: {x: 0.000015259, y: 537}
+  m_SizeDelta: {x: 732.9, y: 220.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2046566973
 MonoBehaviour:

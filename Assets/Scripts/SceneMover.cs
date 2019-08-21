@@ -21,6 +21,14 @@ public class SceneMover : MonoBehaviour {
     {
         SceneManager.LoadScene("HumanManage");
     }
+    public void HumanManageRegisterButton()
+    {
+        SceneManager.LoadScene("HumanManage_Register");
+    }
+    public void HumanManageDeleteButton()
+    {
+        SceneManager.LoadScene("HumanManage_Delete");
+    }
     public void SearchButton()
     {
         SceneManager.LoadScene("Search");
