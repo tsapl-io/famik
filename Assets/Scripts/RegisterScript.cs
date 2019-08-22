@@ -120,13 +120,17 @@ public class RegisterScript : MonoBehaviour {
     public GameObject DialogObject;
     public Text DialogObject_Text;
     public SimpleHealthBar DialogObject_Time;
+    public RawImage MarkImage;
+    public Texture CheckMark;
+    public Texture XMark;
 
     IEnumerator Start () {
         if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugDialog.SetActive(true); else DebugDialog.SetActive(false);
       print(Application.HasUserAuthorization(UserAuthorization.Microphone));
         if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" || JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length == 0) {
+            MarkImage.texture = XMark;
             DialogObject_Text.text = "ユーザー登録画面でユーザーを追加してください。\n\nタイトル画面に戻ります。";
-    		DialogObject.SetActive(true);
+  		      DialogObject.SetActive(true);
             DialogObject_Time.UpdateBar(3, 3);
             yield return new WaitForSeconds(1);
             DialogObject_Time.UpdateBar(2, 3);
@@ -161,6 +165,7 @@ public class RegisterScript : MonoBehaviour {
 
 
             if (Encoding.GetEncoding("UTF-8").GetByteCount(PlayerPrefs.GetString("Famik", " ")) > 10485760) {
+                MarkImage.texture = XMark;
                 StartCoroutine(CompleteBack("Famikのセーブデータが10MBを超えているため、保存ができません。"));
             }
 
@@ -168,8 +173,10 @@ public class RegisterScript : MonoBehaviour {
                 StartCoroutine(CompleteBack(true));
             } else {
                 if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult < 35.0f && GetComponent<GoogleVoiceSpeech>().FeverSpeechResult != 0) {
+                    MarkImage.texture = XMark;
                     StartCoroutine(CompleteBack("異常に体温が低すぎます。\nもう一度やり直してください。"));
                 } else if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 42.0f) {
+                    MarkImage.texture = XMark;
                     StartCoroutine(CompleteBack("異常に体温が高すぎます。\n例:「39.0」\nもう一度やり直してください。"));
                 } else {
                     SaveData inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA"));
@@ -212,18 +219,22 @@ public class RegisterScript : MonoBehaviour {
                     inStorageData.FDV = FamikDatas.FamikDataVersion;
                     DialogObject_Time.UpdateBar(4, 5);
                     PlayerPrefs.SetString("Famik", JsonUtility.ToJson(inStorageData));
+                    MarkImage.texture = CheckMark;
                     StartCoroutine(CompleteBack(false));
                 }
             }
         } catch (PlayerPrefsException) {
+            MarkImage.texture = XMark;
             StartCoroutine(CompleteBack("端末の容量が少ないため、保存ができませんでした。"));
         }
     }
     public IEnumerator CompleteBack(bool emptyError)
     {
         if (!emptyError) {
+            MarkImage.texture = CheckMark;
             DialogObject_Text.text = "データ登録が完了しました。\n\nタイトル画面に戻ります。";
         } else {
+            MarkImage.texture = XMark;
             DialogObject_Text.text = "データが空です。\n\nデータを入力してください。";
         }
         DialogObject.SetActive(true);

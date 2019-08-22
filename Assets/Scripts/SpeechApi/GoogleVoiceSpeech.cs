@@ -52,6 +52,11 @@ public class GoogleVoiceSpeech : MonoBehaviour {
     public bool isMicrophoneFound;
     public float FeverSpeechResult;
 
+    [Header("ダイアログ")]
+    public RawImage MarkImage;
+    public Texture CheckMark;
+    public Texture XMark;
+
     public InputField debug;
 
 
@@ -182,6 +187,7 @@ public class GoogleVoiceSpeech : MonoBehaviour {
               } catch (FormatException) {
                 FeverSpeechResult = 0f;
                 ResultText.text = "";
+                MarkImage.texture = XMark;
                 DialogObject_Text.text = "体温ではない文字が認識されました。\n\nもう一度やり直してください。";
                 ErrorFlag = true;
               }
@@ -190,16 +196,19 @@ public class GoogleVoiceSpeech : MonoBehaviour {
                 if (FeverSpeechResult < 35) {
                     FeverSpeechResult = 0f;
                     ResultText.text = "";
+                    MarkImage.texture = XMark;
                     DialogObject_Text.text = "異常に体温が低すぎます。\n\nもう一度やり直してください。";
                     ErrorFlag = true;
                 } else if (FeverSpeechResult > 42) {
                     FeverSpeechResult = 0f;
                     ResultText.text = "";
+                    MarkImage.texture = XMark;
                     DialogObject_Text.text = "異常に体温が高すぎます。\n例:「39.0」\nもう一度やり直してください。";
                     ErrorFlag = true;
                 }
             } else {
                 if (jsonresponse == "{}") {
+                    MarkImage.texture = XMark;
                     DialogObject_Text.text = "申し訳ございません。\n認識できませんでした。";
                     ErrorFlag = true;
                 }

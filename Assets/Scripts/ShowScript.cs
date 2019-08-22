@@ -22,6 +22,9 @@ public class ShowScript : MonoBehaviour {
     public RawImage ImageDialog;
     public GameObject ImageAndTextDialog;
     public List<int> SeletedNum;
+    public RawImage MarkImage;
+    public Texture CheckMark;
+    public Texture XMark;
 
     [Header("症状表")]
     public TableLayout SickTable;
@@ -232,7 +235,13 @@ public class ShowScript : MonoBehaviour {
 
     IEnumerator PleaseRegisterData(bool isRegister)
     {
-        if (isRegister) DialogObject_Text.text = "データを登録してください。\n\nタイトル画面に戻ります。"; else DialogObject_Text.text = "ユーザー登録画面でユーザーを追加してください。\n\nタイトル画面に戻ります。";
+        if (isRegister) {
+            MarkImage.texture = XMark;
+            DialogObject_Text.text = "データを登録してください。\n\nタイトル画面に戻ります。";
+        } else {
+            MarkImage.texture = XMark;
+            DialogObject_Text.text = "ユーザー登録画面でユーザーを追加してください。\n\nタイトル画面に戻ります。";
+        }
         DialogObject.SetActive(true);
         DialogObject_Time.UpdateBar(3, 3);
         yield return new WaitForSeconds(1);
@@ -264,6 +273,7 @@ public class ShowScript : MonoBehaviour {
     }
     IEnumerator OldDataVersion()
     {
+        MarkImage.texture = XMark;
         DialogObject_Text.text = "Famikデータ形式が古いため、\n読み込めませんでした。\nアプリバージョン: " + FamikDatas.FamikDataVersion + "\nデータバージョン: " + JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV;
         DialogObject.SetActive(true);
         DialogObject_Time.UpdateBar(3, 3);
