@@ -124,6 +124,14 @@ public class RegisterScript : MonoBehaviour {
     public Texture CheckMark;
     public Texture XMark;
 
+    [Header("よつばちゃんダイアログ")]
+    public GameObject YotsubaDialog;
+    public Text YotsubaDialog_Text;
+    public SimpleHealthBar YotsubaDialog_Time;
+
+    //List<bool> symptoms = {Sneeze.isOn, Dripping.isOn, Headache.isOn, SoreThroat.isOn, StomachAche.isOn, Dizzy.isOn, NoAppetite.isOn, Rash.isOn};
+    //List<int> already_number = new List<int>();
+
     IEnumerator Start () {
         if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugDialog.SetActive(true); else DebugDialog.SetActive(false);
       print(Application.HasUserAuthorization(UserAuthorization.Microphone));
@@ -230,23 +238,122 @@ public class RegisterScript : MonoBehaviour {
     }
     public IEnumerator CompleteBack(bool emptyError)
     {
+        int temp_yotsuba = PlayerPrefs.GetInt("YotsubaChan", 1);
         if (!emptyError) {
             MarkImage.texture = CheckMark;
-            DialogObject_Text.text = "データ登録が完了しました。\n\nタイトル画面に戻ります。";
+            if (temp_yotsuba == 0) {
+                DialogObject_Text.text = "データ登録が完了しました。\n\nタイトル画面に戻ります。";
+            } else {
+                DialogObject.SetActive(false);
+                YotsubaDialog_Text.text = "";
+
+
+
+                /*
+                int check_num = 0;
+                if (Sneeze.isOn) check_num++;
+                if (Dripping.isOn) check_num++;
+                if (Headache.isOn) check_num++;
+                if (SoreThroat.isOn) check_num++;
+                if (StomachAche.isOn) check_num++;
+                if (Dizzy.isOn) check_num++;
+                if (NoAppetite.isOn) check_num++;
+                if (Rash.isOn) check_num++;*/
+
+                YotsubaDialog_Text.text = "データ登録しました。\n\n";
+
+                int limit;
+                limit = 0;
+                int now_number = UnityEngine.Random.Range(0, 8);
+                if (Sneeze.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "咳が出るようですね。\nマスクの着用をおすすめします。";
+                    limit++;
+                } if (Dripping.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "手洗いうがいを心がけてください。";
+                    limit++;
+                } if (Headache.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "なるべく横になっていた方が良いですね。";
+                    limit++;
+                } if (SoreThroat.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "あまり大声を出さないでくださいね。";
+                    limit++;
+                } if (StomachAche.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "消化の良いものを食べてくださいね。";
+                    limit++;
+                } if (Dizzy.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "なるべく動かないでくださいね。";
+                    limit++;
+                } if (NoAppetite.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "無理に食べないようにしてくださいね。";
+                    limit++;
+                } if (Rash.isOn && limit != 2) {
+                    YotsubaDialog_Text.text += "発疹が広がるようならば病院に行くことをおすすめします。";
+                    limit++;
+                }
+                /*
+                if (check_num > 1) {
+
+                    YotsubaDialog_Text.text += "\n" + random_select_text();
+
+                } else if (check_num == 1) {
+
+                }
+
+                if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 38.0f) {
+                    YotsubaDialog_Text.text = "データ登録しました。\n熱が高いようですね。";
+                }
+                if (Dizzy.isOn) {
+                    YotsubaDialog_Text.text = "データ登録しました。\nめまいがするようですね。";
+                }
+                if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 38.0f && Dizzy.isOn) {
+                    YotsubaDialog_Text.text = "データ登録しました。\nどうぞお大事にしてください。";
+                }
+                if (Sneeze.isOn) {
+                    YotsubaDialog_Text.text = "データ登録しました。\n咳が出るようですね。\nマスクの着用をおすすめします。";
+                }
+                if (Dripping.isOn) {
+                    YotsubaDialog_Text.text = "データ登録しました。\n手洗いうがいを心がけましょう。";
+                }
+                if (Sneeze.isOn && Dripping.isOn) {
+                    YotsubaDialog_Text.text = "データ登録しました。\n手洗いうがいを心がけましょう。\nマスクの着用をおすすめします。";
+                }*/
+
+                if (YotsubaDialog_Text.text == "") {
+                    YotsubaDialog_Text.text = "データ登録しました。";
+                }
+                YotsubaDialog.SetActive(true);
+            }
         } else {
+            temp_yotsuba = 0;
             MarkImage.texture = XMark;
             DialogObject_Text.text = "データが空です。\n\nデータを入力してください。";
+            DialogObject.SetActive(true);
         }
-        DialogObject.SetActive(true);
-        DialogObject_Time.UpdateBar(3, 3);
-        yield return new WaitForSeconds(1);
-        DialogObject_Time.UpdateBar(2, 3);
-        yield return new WaitForSeconds(1);
-        DialogObject_Time.UpdateBar(1, 3);
-        yield return new WaitForSeconds(1);
-        DialogObject_Time.UpdateBar(0, 3);
-        DialogObject.SetActive(false);
-        DialogObject_Time.UpdateBar(0, 3);
+        if (temp_yotsuba == 0) {
+            DialogObject_Time.UpdateBar(3, 3);
+            yield return new WaitForSeconds(1);
+            DialogObject_Time.UpdateBar(2, 3);
+            yield return new WaitForSeconds(1);
+            DialogObject_Time.UpdateBar(1, 3);
+            yield return new WaitForSeconds(1);
+            DialogObject_Time.UpdateBar(0, 3);
+            DialogObject.SetActive(false);
+            DialogObject_Time.UpdateBar(3, 3);
+        } else {
+            YotsubaDialog_Time.UpdateBar(5, 5);
+            yield return new WaitForSeconds(1);
+            YotsubaDialog_Time.UpdateBar(4, 5);
+            yield return new WaitForSeconds(1);
+            YotsubaDialog_Time.UpdateBar(3, 5);
+            yield return new WaitForSeconds(1);
+            YotsubaDialog_Time.UpdateBar(2, 5);
+            yield return new WaitForSeconds(1);
+            YotsubaDialog_Time.UpdateBar(1, 5);
+            yield return new WaitForSeconds(1);
+            YotsubaDialog_Time.UpdateBar(0, 5);
+            YotsubaDialog.SetActive(false);
+            YotsubaDialog_Time.UpdateBar(5, 5);
+        }
         if (!emptyError) {
             SceneManager.LoadScene("Main");
         } else {
@@ -270,6 +377,38 @@ public class RegisterScript : MonoBehaviour {
         SceneManager.LoadScene("Register");
 
     }
+    /*
+    public string random_select_text() {
+        int now_number = Math.Floor(UnityEngine.Random.Range(0, 7));
 
+        bool flag = false;
+        for (int i = 0; i < already_number.Count; i++) {
+            if (now_number == already_number[i]) {
+                flag = true;
+            }
+        }
+        if (flag) {
+            return random_select_text();
+        } else {
+            already_number.Add(now_number);
+            if (now_number == 0) {
+                return "マスクの着用をおすすめします。";
+            } else if (now_number == 1) {
+                return "手洗いうがいを心がけてください。";
+            } else if (now_number == 2) {
+                return "なるべく横になっていた方が良いですね。";
+            } else if (now_number == 3) {
+                return "あまり大声を出さないでくださいね。";
+            } else if (now_number == 4) {
+                return "消化の良いものを食べてくださいね。";
+            } else if (now_number == 5) {
+                return "なるべく動かないでくださいね。";
+            } else if (now_number == 6) {
+                return "無理に食べないようにしてくださいね。";
+            } else if (now_number == 7) {
+                return "発疹が広がるようならば病院に行くことをおすすめします。";
+            }
+        }
+    }*/
 
 }

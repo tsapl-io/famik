@@ -5,23 +5,23 @@ using UnityEngine;
 public class MainSceneScript : MonoBehaviour {
     public UnityEngine.UI.Button SearchButton;
 
+
     [SerializeField]
     int DebugClickCount;
     Coroutine DebugResetCoroutine;
 
 	// Use this for initialization
 	void Start () {
-		if (Application.internetReachability == NetworkReachability.NotReachable) {
-            SearchButton.interactable = false;
-            SearchButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "インターネット接続なし";
-        }
-    }
+		  if (Application.internetReachability == NetworkReachability.NotReachable) {
+          SearchButton.interactable = false;
+          SearchButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "インターネット接続なし";
+      }
+  }
 
 	// Update is called once per frame
 	void Update () {
 
 	}
-
 
     public void DebugClick()
     {
