@@ -2389,7 +2389,7 @@ Prefab:
     - target: {fileID: 114273109160086266, guid: 7ce91678f5b4e4ba6b463f706dfdce02,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: BackButton
+      value: HumanManageButton
       objectReference: {fileID: 0}
     - target: {fileID: 114273109160086266, guid: 7ce91678f5b4e4ba6b463f706dfdce02,
         type: 2}

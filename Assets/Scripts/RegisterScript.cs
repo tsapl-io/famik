@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
@@ -247,9 +248,6 @@ public class RegisterScript : MonoBehaviour {
                 DialogObject.SetActive(false);
                 YotsubaDialog_Text.text = "";
 
-
-
-                /*
                 int check_num = 0;
                 if (Sneeze.isOn) check_num++;
                 if (Dripping.isOn) check_num++;
@@ -258,13 +256,86 @@ public class RegisterScript : MonoBehaviour {
                 if (StomachAche.isOn) check_num++;
                 if (Dizzy.isOn) check_num++;
                 if (NoAppetite.isOn) check_num++;
-                if (Rash.isOn) check_num++;*/
+                if (Rash.isOn) check_num++;
 
-                YotsubaDialog_Text.text = "データ登録しました。\n\n";
 
+                YotsubaDialog_Text.text = "データ登録しました。";
+                if (check_num >= 1) {
+
+                    List<int> order = new List<int>();
+                    if (Sneeze.isOn) {
+                        order.Add(0);
+                    }
+                    if (Dripping.isOn) {
+                        order.Add(1);
+                    }
+                    if (Headache.isOn) {
+                        order.Add(2);
+                    }
+                    if (SoreThroat.isOn) {
+                        order.Add(3);
+                    }
+                    if (StomachAche.isOn) {
+                        order.Add(4);
+                    }
+                    if (Dizzy.isOn) {
+                        order.Add(5);
+                    }
+                    if (NoAppetite.isOn) {
+                        order.Add(6);
+                    }
+                    if (Rash.isOn) {
+                        order.Add(7);
+                    }
+                    
+                    order = order.OrderBy(a => Guid.NewGuid()).ToList();
+                    for (int i = 0; i < order.Count; i++) {
+                        if (order[i] == 0) {
+                            string[] tmp = {"マスクの着用をおすすめします。", "咳が続くようならば病院の受診をおすすめします。"};
+                            List<string> sneeze_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + sneeze_sentence[UnityEngine.Random.Range(0, sneeze_sentence.Count)];
+                        } else if (order[i] == 1) {
+                            string[] tmp = {"手洗いうがいをこまめにすることをおすすめします。", "鼻をかんだら、水分の補給をお忘れなく。"};
+                            List<string> dripping_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + dripping_sentence[UnityEngine.Random.Range(0, dripping_sentence.Count)];
+                        } else if (order[i] == 2) {
+                            string[] tmp = {"頭が痛いのは辛いですね。早めに休んでくださいね。"};
+                            List<string> headache_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + headache_sentence[UnityEngine.Random.Range(0, headache_sentence.Count)];
+                        } else if (order[i] == 3) {
+                            string[] tmp = {"のどを乾燥させないように気をつけてくださいね。", "のどの乾燥を防ぐのに、マスクやのど飴、うがいは有効ですよ！"};
+                            List<string> sorethroat_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + sorethroat_sentence[UnityEngine.Random.Range(0, sorethroat_sentence.Count)];
+                        } else if (order[i] == 4) {
+                            string[] tmp = {"お腹が痛くなった状況や経過を、その他欄に記録しておくことをおすすめします。"};
+                            List<string> stomachache_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + stomachache_sentence[UnityEngine.Random.Range(0, stomachache_sentence.Count)];
+                        } else if (order[i] == 5) {
+                            string[] tmp = {"早めに休んでくださいね。", "めまいが続いたら病院の受診をおすすめします。"};
+                            List<string> dizzy_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + dizzy_sentence[UnityEngine.Random.Range(0, dizzy_sentence.Count)];
+                        } else if (order[i] == 6) {
+                            string[] tmp = {"食欲がなくても水分の補給はお忘れなく！"};
+                            List<string> noappetite_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + noappetite_sentence[UnityEngine.Random.Range(0, noappetite_sentence.Count)];
+                        } else if (order[i] == 7) {
+                            string[] tmp = {"発疹を写真に撮ってお医者さんに見せると、説明が楽ですよ！", "発疹が広がっているようならば、病院の受診をおすすめします。"};
+                            List<string> rash_sentence = new List<string>(tmp);
+                            YotsubaDialog_Text.text += "\n\n" + rash_sentence[UnityEngine.Random.Range(0, rash_sentence.Count)];
+                        }
+                        if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult >= 38.0f && i == 0) break;
+                        if (i == 1) break;
+                    }
+                }
+                if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult >= 38.0f) {
+                    string[] tmp = {"水分を十分にとって、早めにお休みください。", "熱が続くようなら、病院の受診をおすすめします。"};
+                    List<string> fever_sentence = new List<string>(tmp);
+                    YotsubaDialog_Text.text += "\n\n" + fever_sentence[UnityEngine.Random.Range(0, fever_sentence.Count)];
+                }
+
+                /*
                 int limit;
                 limit = 0;
-                int now_number = UnityEngine.Random.Range(0, 8);
                 if (Sneeze.isOn && limit != 2) {
                     YotsubaDialog_Text.text += "咳が出るようですね。\nマスクの着用をおすすめします。";
                     limit++;
@@ -289,8 +360,11 @@ public class RegisterScript : MonoBehaviour {
                 } if (Rash.isOn && limit != 2) {
                     YotsubaDialog_Text.text += "発疹が広がるようならば病院に行くことをおすすめします。";
                     limit++;
+                } if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 38.0f && limit != 2) {
+                    YotsubaDialog_Text.text += "水分を十分にとって、早めにお休みください。";
+                    limit++;
                 }
-                /*
+
                 if (check_num > 1) {
 
                     YotsubaDialog_Text.text += "\n" + random_select_text();
