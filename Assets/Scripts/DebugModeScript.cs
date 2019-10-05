@@ -13,16 +13,34 @@ public class DebugModeScript : MonoBehaviour {
     public GameObject WriteJSONDialog;
 
     public Toggle DebugPanelShow_01;
+    public Toggle YotusubaDialogShow_Toggle;
+    public Toggle ActiveDebugMode_Toggle;
+    public Toggle DebugModeLog_Toggle;
 
-    public Text DebugLog;
+    public GameObject DebugLogObject;
+    public InputField DebugLog;
     int LogNumLines;
 
     public void Start() {
-        if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugPanelShow_01.isOn = true; else DebugPanelShow_01.isOn = false;
+      if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugPanelShow_01.isOn = true; else DebugPanelShow_01.isOn = false;
+      if (PlayerPrefs.GetInt("YotsubaChan", 0) == 1) YotusubaDialogShow_Toggle.isOn = true; else YotusubaDialogShow_Toggle.isOn = false;
+      if (PlayerPrefs.GetInt("DebugMode_isActive", 0) == 1) ActiveDebugMode_Toggle.isOn = true; else ActiveDebugMode_Toggle.isOn = false;
+      if (PlayerPrefs.GetInt("DebugModeLog", 0) == 1) DebugModeLog_Toggle.isOn = true; else DebugModeLog_Toggle.isOn = false;
+      if (PlayerPrefs.GetInt("DebugModeLog", 0) == 1) DebugLogObject.SetActive(true); else DebugLogObject.SetActive(false);
     }
 
     public void ChangeDebugPanelShow_01 () {
         if (DebugPanelShow_01.isOn) PlayerPrefs.SetInt("FamikSetting_RegisterDebugDialog", 1); else PlayerPrefs.SetInt("FamikSetting_RegisterDebugDialog", 0);
+    }
+    public void Change_YotusubaDialogShow_Toggle () {
+        if (YotusubaDialogShow_Toggle.isOn) PlayerPrefs.SetInt("YotsubaChan", 1); else PlayerPrefs.SetInt("YotsubaChan", 0);
+    }
+    public void Change_ActiveDebugMode_Toggle () {
+        if (ActiveDebugMode_Toggle.isOn) PlayerPrefs.SetInt("DebugMode_isActive", 1); else PlayerPrefs.SetInt("DebugMode_isActive", 0);
+    }
+    public void Change_DebugModeLog_Toggle () {
+        if (DebugModeLog_Toggle.isOn) PlayerPrefs.SetInt("DebugModeLog", 1); else PlayerPrefs.SetInt("DebugModeLog", 0);
+        if (PlayerPrefs.GetInt("DebugModeLog", 0) == 1) DebugLogObject.SetActive(true); else DebugLogObject.SetActive(false);
     }
 
     public static string ToReadable( string json )
@@ -55,6 +73,7 @@ public class DebugModeScript : MonoBehaviour {
                 else if ( json.Length > i && json[ i ] == ',' && json[ i + 1 ] == '"' )
                 {
                     position = 1;
+                    sb.Append("\n");
                 }
                 if ( position >= 0 )
                 {
@@ -108,9 +127,9 @@ public class DebugModeScript : MonoBehaviour {
     public void LoadSaveJSON()
     {
         if (RequestTarget.value == 0) {
-            LogOutput(ToReadable(PlayerPrefs.GetString("Famik", "{\"通知\":\"データがありません\"}")));
+            LogOutput(PlayerPrefs.GetString("Famik", "データがありません"));
         } else if (RequestTarget.value == 1) {
-            LogOutput(ToReadable(PlayerPrefs.GetString("Stars", "{\"通知\":\"データがありません\"}")));
+            LogOutput(PlayerPrefs.GetString("Stars", "データがありません"));
         }
     }
 

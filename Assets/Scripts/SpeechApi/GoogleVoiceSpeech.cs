@@ -180,6 +180,12 @@ public class GoogleVoiceSpeech : MonoBehaviour {
               } else if (str.IndexOf("°c ") != -1 && str.EndsWith("分")) {   // ○○°c ○分  -> ○部○部
                 str = str.Replace("°c ", ".");
                 str = str.TrimEnd('分');
+              } else if (str.EndsWith("毒部位")) {     // ○○度9分    -> ○毒部位
+                str = str.Replace("毒部位", ".9");
+              } else if (str.EndsWith(" XV")) {     // ○○度9分    -> ○ XV
+                str = str.Replace(" XV", ".9");
+              } else if (str.EndsWith("6v")) {     // ○○度9分    -> ○6v
+                str = str.Replace("6v", ".9");
               }
               debug.text += ("str: " + str + "\n");
               try {

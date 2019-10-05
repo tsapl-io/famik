@@ -1731,12 +1731,12 @@ MonoBehaviour:
   RecordButton_Text: {fileID: 1035388998}
   TimeLimit: {fileID: 702865110}
   ResultText: {fileID: 1238348838}
-  DialogObject: {fileID: 0}
-  DialogObject_Text: {fileID: 0}
-  DialogObject_Time: {fileID: 0}
+  DialogObject: {fileID: 371423377}
+  DialogObject_Text: {fileID: 53652746}
+  DialogObject_Time: {fileID: 986463260}
   isMicrophoneFound: 0
   FeverSpeechResult: 0
-  MarkImage: {fileID: 0}
+  MarkImage: {fileID: 1125256430}
   CheckMark: {fileID: 2800000, guid: d39bdd62fd9cc4a5cbe696525a66f5d7, type: 3}
   XMark: {fileID: 2800000, guid: 56f1fa91394cb466aaab3f44fc83fe60, type: 3}
   debug: {fileID: 1023549753}

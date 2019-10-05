@@ -8,6 +8,12 @@ public class MainSceneScript : MonoBehaviour {
 
     [SerializeField]
     int DebugClickCount;
+
+    [SerializeField]
+    int DebugClickCount_Title;
+    [SerializeField]
+    int DebugClickCount_Credit;
+
     Coroutine DebugResetCoroutine;
 
 	// Use this for initialization
@@ -23,9 +29,22 @@ public class MainSceneScript : MonoBehaviour {
 
 	}
 
+  public void DebugClick_Title() {
+      DebugClickCount_Title++;
+      if (DebugClickCount_Title > 10 && DebugClickCount_Credit > 10) {
+          PlayerPrefs.SetInt("DebugMode_isActive", 1);
+      }
+  }
+  public void DebugClick_Credit() {
+      DebugClickCount_Credit++;
+      if (DebugClickCount_Title > 10 && DebugClickCount_Credit > 10) {
+          PlayerPrefs.SetInt("DebugMode_isActive", 1);
+      }
+  }
+
     public void DebugClick()
     {
-        if (Debug.isDebugBuild) {
+        if (PlayerPrefs.GetInt("DebugMode_isActive", 0) != 0) {
             DebugClickCount++;
             DebugResetCoroutine = StartCoroutine(WaitForResetCount());
             if (DebugClickCount == 5)
