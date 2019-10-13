@@ -355,7 +355,7 @@ public class FreeSearchScript : MonoBehaviour {
             starList.Remove(ApiResponse.Feature[number].Property.Uid);
             StartCoroutine(StarAnimate(false, number));
         }
-        StarJson temporaryStarJson = new StarJson();//以下二行だけ
+        StarJson temporaryStarJson = new StarJson();
         temporaryStarJson.Stars = starList.ToArray();
         PlayerPrefs.SetString("Stars", JsonUtility.ToJson(temporaryStarJson));
     }

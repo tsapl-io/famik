@@ -17,36 +17,30 @@ public class HumanManageScript : MonoBehaviour {
     public GameObject DialogObject;
     public Text DialogObject_Text;
 
-    [Header("ボタンとか")]
+    [Header("ボタン")]
     public Button DeleteHumanButton;
 
     string TempRegisterName;
 
     // Use this for initialization
-    void Start () {
-        if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" || JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length == 0)
-        {
+    void Start() {
+        if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" || JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length == 0) {
             DeleteHumanButton.interactable = false;
             HumanSelect.interactable = false;
             PlayerPrefs.SetString("Famik", "{\"Humans\":[], \"FDV\": " + FamikDatas.FamikDataVersion + "}");
         }
         SaveData LoadedData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA"));
-        for (int i = 0; i < LoadedData.Humans.Length; i++)
-        {
+        for (int i = 0; i < LoadedData.Humans.Length; i++) {
             HumanSelectOptions.Add(LoadedData.Humans[i].Name);
         }
         HumanSelect.AddOptions(HumanSelectOptions);
     }
+  	// Update is called once per frame
+  	void Update () {
 
-	// Update is called once per frame
-	void Update () {
-
-	}
-
-    public void CreateHuman()
-    {
-        if (humanname.text != "")
-        {
+  	}
+    public void CreateHuman() {
+        if (humanname.text != "") {
             SaveData storage = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik"));
 
             for (int i = 0; i < storage.Humans.Length; i++) {
@@ -61,37 +55,30 @@ public class HumanManageScript : MonoBehaviour {
                 PlayerPrefs.SetString("Famik", JsonUtility.ToJson(storage));
                 SceneManager.LoadScene("HumanManage");
             } else DeleteHumanDialogShow("この名前はすでに使われています。\n重複して登録しますか？");
+        } else {
+            Debug.LogError("名前欄が空欄です。ユーザーを登録することはできません。\nこの要求は、キャンセルされました。");
         }
     }
     public void DeleteHumanDialogShow()
     {
         string inStorageData = PlayerPrefs.GetString("Famik", "NO DATA");
-        if (inStorageData != "NO DATA")
-        {
+        if (inStorageData != "NO DATA") {
             DialogObject_Text.text = "本当に削除しますか？";
             DialogObject.SetActive(true);
-        }
-        else
-        {
-            // error
+        } else {
+            Debug.LogError("データがありませんが、データ削除ダイアログを表示しようとしました。\nこの要求は、キャンセルされました。");
         }
     }
-    public void DeleteHumanDialogShow(string mes)
-    {
+    public void DeleteHumanDialogShow(string mes) {
         string inStorageData = PlayerPrefs.GetString("Famik", "NO DATA");
-        if (inStorageData != "NO DATA")
-        {
+        if (inStorageData != "NO DATA") {
             DialogObject_Text.text = mes;
             DialogObject.SetActive(true);
-        }
-        else
-        {
-            // error
+        } else {
+            Debug.LogError("データがありませんが、データ削除ダイアログを表示しようとしました。\nこの要求は、キャンセルされました。");
         }
     }
-
-    public void Dialog_OK()
-    {
+    public void Dialog_OK() {
         if (DialogObject_Text.text == "本当に削除しますか？") {
             StartCoroutine(deleteUser());
         } else if (DialogObject_Text.text == "この名前はすでに使われています。\n重複して登録しますか？") {
@@ -126,8 +113,7 @@ public class HumanManageScript : MonoBehaviour {
         PlayerPrefs.SetString("Famik", JsonUtility.ToJson(storage));
         SceneManager.LoadScene("HumanManage");
     }
-    public void Dialog_Cancel()
-    {
+    public void Dialog_Cancel() {
         DialogObject.SetActive(false);
     }
 }

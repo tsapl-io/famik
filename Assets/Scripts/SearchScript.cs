@@ -65,7 +65,6 @@ public class SearchScript : MonoBehaviour {
 
     public RawImage Maps;
     public Text NameAndTel;
-    //0401003
 
     StarJson starJson;
     Y_YDF ApiResponse;
@@ -75,37 +74,23 @@ public class SearchScript : MonoBehaviour {
     public Text DialogText;
 
     Coroutine ApiCoroutine;
-	// Use this for initialization
-	void Start () {
-        CategoryDropdown.ClearOptions();
-        CategoryDropdown.AddOptions(new List<string>{"小児科", "内科", "耳鼻咽喉科", "皮膚科", "歯科", "眼科", "外科", "整形外科", "胃腸科", "呼吸器科",});
-        //SearchCategory.Add("0401003");
-        /*
-        string[] SearchCategory2 = new string[10] {"あ", "0401002", "0401009", "0401008", "0401001", "0401007", "0401006", "0401004", "0401005", "0401017"};
+    
+  	// Use this for initialization
+  	void Start () {
+          CategoryDropdown.ClearOptions();
+          CategoryDropdown.AddOptions(new List<string>{"小児科", "内科", "耳鼻咽喉科", "皮膚科", "歯科", "眼科", "外科", "整形外科", "胃腸科", "呼吸器科",});
 
-        string str = SearchCategory2[0];
-
-        print(SearchCategory2);
-        print(SearchCategory2.Length);
-
-        print(str);
-        */
-
-        for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
-        StartCoroutine(GpsGet());
-	}
-
-	// Update is called once per frame
-	void Update () {
-		if (isRunning)
-        {
+          for (int i = 0; i < HPButtons.Count; i++) { HPButtons[i].gameObject.SetActive(false); }
+          StartCoroutine(GpsGet());
+  	}
+	   // Update is called once per frame
+    void Update () {
+		    if (isRunning) {
             CategoryDropdown.interactable = false;
             OpenNow.interactable = false;
             z_MapSlider.interactable = false;
             HPButtonsObject.SetActive(false);
-        }
-        else
-        {
+        } else {
             CategoryDropdown.interactable = true;
             OpenNow.interactable = true;
             z_MapSlider.interactable = true;

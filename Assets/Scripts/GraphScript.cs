@@ -5,10 +5,7 @@ using System.Collections.Generic;
 
 using CP.ProChart;
 
-///<summary>
-/// Demo for canvas based bar and line chart using 2D data set
-///</summary>
-public class GraphScript : MonoBehaviour 
+public class GraphScript : MonoBehaviour
 {
     //line chart datas
     public LineChart lineChart;
@@ -18,9 +15,7 @@ public class GraphScript : MonoBehaviour
     public Text tooltipText;
 
     //labels
-    public GameObject labelLine;/*
-    public GameObject axisXLabel;
-    public GameObject axisYLabel;*/
+    public GameObject labelLine;
 
     //2D Data set
     private ChartData2D dataSet;
@@ -52,7 +47,7 @@ public class GraphScript : MonoBehaviour
         overColumn = column;
     }
 
-    public void Start() 
+    public void Start()
     {
         if (PlayerPrefs.GetString("Famik", "NO DATA") != "NO DATA" && JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length != 0) {
 
@@ -74,15 +69,11 @@ public class GraphScript : MonoBehaviour
             print(lineLabels.Count);
 
             dataSet = new ChartData2D();
-            //#if DEBUG
-            //dataSet[1, 0] = 40.0f;
-            //#else
             for (int i = 0; i < inStorageData.Humans[HumanDropdown.value].OneSicks.Length; i++)
             {
                 dataSet[0, i] = float.NaN;
                 dataSet[1, i] = float.Parse(inStorageData.Humans[HumanDropdown.value].OneSicks[i].Fever);
             }
-            //#endif
 
             lineChart.SetValues(ref dataSet);
 
@@ -127,7 +118,7 @@ public class GraphScript : MonoBehaviour
             tooltipText.text = string.Format("{1}/{2} {3}:{4}\n{0}℃", dataSet[overRow, overColumn].ToString("F1"), inStorageData.Humans[HumanDropdown.value].OneSicks[overColumn].Time.Month, inStorageData.Humans[HumanDropdown.value].OneSicks[overColumn].Time.Day, inStorageData.Humans[HumanDropdown.value].OneSicks[overColumn].Time.Hour, inStorageData.Humans[HumanDropdown.value].OneSicks[overColumn].Time.Minute);
         }
 
-        UpdateLabels(); 
+        UpdateLabels();
     }
     string TempFever;
     public void UpdateLabels()
@@ -173,7 +164,6 @@ public class GraphScript : MonoBehaviour
                 lineLabels[dataSet.Columns + j].fontSize = 30;
                 lineLabels[dataSet.Columns + j].rectTransform.localScale = new Vector3(1, 1, 1);
                 lineLabels[dataSet.Columns + j].rectTransform.anchoredPosition = labelPos.position;
-                //lineLabels[dataSet.Columns + j].rectTransform.position -= new Vector3(0, 50, 0);
                 lineLabels[dataSet.Columns + j].rectTransform.sizeDelta = new Vector2(180, 500);
             }
         }

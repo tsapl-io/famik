@@ -33,7 +33,7 @@ public class StarsScript : MonoBehaviour {
     fY_YDF ApiResponse;
     StarJson starJson2;
     List<string> starList;
-    // Use this for initialization
+
     void Start () {
         for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].gameObject.SetActive(false); }
         for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].GetComponent<RawImage>().texture = unStar; }
@@ -41,15 +41,8 @@ public class StarsScript : MonoBehaviour {
         for (int i = 0; i < HPButtons2.Count; i++) { HPButtons2[i].gameObject.SetActive(false); }
         StartCoroutine(Search_Stars());
     }
-
-    // Update is called once per frame
-    void Update () {
-
-    }
-
-    IEnumerator Search_Stars()
-    {
-        if( isRunning ) { yield break; }
+    IEnumerator Search_Stars() {
+        if( isRunning ) yield break;
         isRunning = true;
 
         for (int i = 0; i < StarButtons.Count; i++) { StarButtons[i].gameObject.SetActive(false); }
@@ -63,8 +56,7 @@ public class StarsScript : MonoBehaviour {
         print(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
 
         print(starJson2.Stars.Length);
-        if (starJson2.Stars.Length == 0)
-        {
+        if (starJson2.Stars.Length == 0) {
             NoStarsText.SetActive(true);
             NameAndTelStar.text = "";
             isRunning = false;
@@ -80,8 +72,7 @@ public class StarsScript : MonoBehaviour {
 
         print(yolp_url);
 
-        using (WWW www = new WWW(yolp_url))
-        {
+        using (WWW www = new WWW(yolp_url)) {
             yield return www;
             print("API リターン\n" + www.text);
             ApiResponse2 = JsonUtility.FromJson<fY2_YDF>(www.text);
@@ -104,29 +95,23 @@ public class StarsScript : MonoBehaviour {
                 }
             }
         }
-        //YahooAPIImage.GetComponent<RectTransform>().anchoredPosition = new Vector2(YahooAPIImage.GetComponent<RectTransform>().anchoredPosition.x, 0 - (100 + (55 * ApiResponse3.Feature.Length)) + 30);
+
         isRunning = false;
     }
-
-    public void DialogManage(string mes)
-    {
+    public void DialogManage(string mes) {
         DialogText.text = mes;
         Dialog.SetActive(true);
     }
-    public void DialogManage()
-    {
+    public void DialogManage() {
         Dialog.SetActive(false);
-
     }
-    public void OpenURL_Stars(int number)
-    {
+    public void OpenURL_Stars(int number) {
           for (int i = 0; i < ApiResponse3.Feature.Length; i++) {
               if (starJson2.Stars[number] == ApiResponse3.Feature[i].Property.Uid) {
                   Application.OpenURL(ApiResponse3.Feature[i].Property.Detail.YUrl);
               }
           }
     }
-
     public IEnumerator StarAnimate(bool isStar, int number) {
         if (isStar) {
             // スターをつけるアニメーション
@@ -148,9 +133,7 @@ public class StarsScript : MonoBehaviour {
             StarButtons[number].GetComponent<RawImage>().texture = unStar;
         }
     }
-
-    public void PushStarButton(int number)
-    {
+    public void PushStarButton(int number) {
         if (StarButtons[number].GetComponent<RawImage>().texture == unStar) {
             starList.Add(starJson2.Stars[number]);
             StartCoroutine(StarAnimate(true, number));
@@ -158,7 +141,7 @@ public class StarsScript : MonoBehaviour {
             starList.Remove(starJson2.Stars[number]);
             StartCoroutine(StarAnimate(false, number));
         }
-        StarJson temporaryStarJson = new StarJson();//以下二行だけ
+        StarJson temporaryStarJson = new StarJson();
         temporaryStarJson.Stars = starList.ToArray();
         PlayerPrefs.SetString("Stars", JsonUtility.ToJson(temporaryStarJson));
     }

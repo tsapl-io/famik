@@ -14,7 +14,6 @@ public class HumanData {
     public string Name;
     public Sick[] OneSicks;
 }
-// \n
 [Serializable]
 public class Sick {
     public Times Time;
@@ -179,11 +178,6 @@ public class RegisterScript : MonoBehaviour {
             */
         }
     }
-
-	// Update is called once per frame
-	void Update () {
-
-	}
 
     public void Save()
     {
@@ -360,19 +354,22 @@ public class RegisterScript : MonoBehaviour {
                     YotsubaDialog_Text.text += "\n\n" + fever_sentence[UnityEngine.Random.Range(0, fever_sentence.Count)];
                 }
 
+                if (PlayerPrefs.GetInt("YotsubaChanTalk", 0) == 1) {
+                    yield return new WaitForSeconds(0.2f);
 
-                yield return new WaitForSeconds(0.2f);
-
-                for (int i = 0; i < FamikDatas.VoiceList.Length; i++) {
-                    if (YotsubaDialog_Text.text.IndexOf(FamikDatas.VoiceList[i]) > -1) {
-                        //print("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav");
-                        using (WWW www = new WWW("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav")) {
-                            yield return www;
-                            audioSource.clip = www.GetAudioClip(true, true);
-                            audioSource.Play();
-                            yield return new WaitForSeconds(audioSource.clip.length);
+                    for (int i = 0; i < FamikDatas.VoiceList.Length; i++) {
+                        if (YotsubaDialog_Text.text.IndexOf(FamikDatas.VoiceList[i]) > -1) {
+                            //print("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav");
+                            using (WWW www = new WWW("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav")) {
+                                yield return www;
+                                audioSource.clip = www.GetAudioClip(true, true);
+                                audioSource.Play();
+                                yield return new WaitForSeconds(audioSource.clip.length);
+                            }
                         }
                     }
+                } else {
+                    yield return new WaitForSeconds(3f);
                 }
 
                 /*
@@ -461,8 +458,7 @@ public class RegisterScript : MonoBehaviour {
         }
 
     }
-    public IEnumerator CompleteBack(string message)
-    {
+    public IEnumerator CompleteBack(string message) {
         DialogObject_Text.text = message;
         DialogObject.SetActive(true);
         if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
@@ -478,38 +474,5 @@ public class RegisterScript : MonoBehaviour {
         SceneManager.LoadScene("Register");
 
     }
-    /*
-    public string random_select_text() {
-        int now_number = Math.Floor(UnityEngine.Random.Range(0, 7));
-
-        bool flag = false;
-        for (int i = 0; i < already_number.Count; i++) {
-            if (now_number == already_number[i]) {
-                flag = true;
-            }
-        }
-        if (flag) {
-            return random_select_text();
-        } else {
-            already_number.Add(now_number);
-            if (now_number == 0) {
-                return "マスクの着用をおすすめします。";
-            } else if (now_number == 1) {
-                return "手洗いうがいを心がけてください。";
-            } else if (now_number == 2) {
-                return "なるべく横になっていた方が良いですね。";
-            } else if (now_number == 3) {
-                return "あまり大声を出さないでくださいね。";
-            } else if (now_number == 4) {
-                return "消化の良いものを食べてくださいね。";
-            } else if (now_number == 5) {
-                return "なるべく動かないでくださいね。";
-            } else if (now_number == 6) {
-                return "無理に食べないようにしてくださいね。";
-            } else if (now_number == 7) {
-                return "発疹が広がるようならば病院に行くことをおすすめします。";
-            }
-        }
-    }*/
 
 }

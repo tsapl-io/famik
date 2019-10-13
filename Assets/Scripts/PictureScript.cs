@@ -67,43 +67,13 @@ public class PictureScript : MonoBehaviour {
         TemporaryPicture.texture = webCamTexture;
         webCamTexture.Play();
     }
-
-    /*
-    public void PictureShotButton () {
-        isPictureSaved = true;
-        // AudioServicesPlaySystemSound(1108);
-
-        Texture TempTexture = webCamTexture;
-        TemporaryPicture.texture = TempTexture;
-        SimplePreviewPicture.texture = TempTexture;
-
-        ImageBase64 = ImageBase64Get(TempTexture);
-
-        StartCoroutine(HidePictureDialogWith3Seconds());
-    }
-    public string ImageBase64Get(Texture texture){
-        Texture TempTexture = webCamTexture;
-
-        texture2d = ToTexture2D(TempTexture);
-        StartCoroutine(Wait());
-
-        string returnTmp = System.Convert.ToBase64String(texture2d.EncodeToJPG());
-        webCamTexture.Stop();
-        return returnTmp;
-    }
-    */
+    
     public void ShowPictureDialog()
     {
         CompleteShot.SetActive(false);
         PictureDialog.SetActive(true);
         Start();
     }
-
-
-
-
-
-
     public void PictureShotButton () {
         isPictureSaved = true;
 

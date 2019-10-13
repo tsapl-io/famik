@@ -27,7 +27,7 @@ public class DebugModeScript : MonoBehaviour {
       if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugPanelShow_01.isOn = true; else DebugPanelShow_01.isOn = false;
       if (PlayerPrefs.GetInt("YotsubaChan", 0) == 1) YotusubaDialogShow_Toggle.isOn = true; else YotusubaDialogShow_Toggle.isOn = false;
       if (PlayerPrefs.GetInt("DebugMode_isActive", 0) == 1) ActiveDebugMode_Toggle.isOn = true; else ActiveDebugMode_Toggle.isOn = false;
-      FolderPathText.text = "DataPath: " + Application.persistentDataPath + "\nTempPath: " + Application.temporaryCachePath;
+      FolderPathText.text = "" + Application.persistentDataPath + "\n" + Application.temporaryCachePath;
     }
 
     public void ChangeDebugPanelShow_01 () {

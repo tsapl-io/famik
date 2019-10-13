@@ -7,22 +7,6 @@ using System.Net;
 
 // https://docs.microsoft.com/ja-jp/dotnet/framework/network-programming/how-to-send-data-using-the-webrequest-class
 
-/*
-
---------------------------------------------------
-
-    Reqlient://
-
-      Request + Client C# Library
-
-    by Moltas
-
---------------------------------------------------
-
-    License : MIT License
-
-*/
-
 namespace Reqlient {
     public static class HttpRequest {
         public enum RequestMethod { POST, GET }
