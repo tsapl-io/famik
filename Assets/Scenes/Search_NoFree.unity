@@ -1967,8 +1967,20 @@ MonoBehaviour:
   - {fileID: 898559080}
   - {fileID: 155430205}
   - {fileID: 1918560196}
-  unStar: {fileID: 2800000, guid: 16e0d9f52190f4f628a449bf2f768288, type: 3}
-  Star: {fileID: 2800000, guid: 751c4f7a673f74ff49bdb7efb6eb64c5, type: 3}
+  unStar: {fileID: 2800000, guid: c904e537705514911870a97491ff4094, type: 3}
+  Star: {fileID: 2800000, guid: c7939d08a542244c89882905a2518af0, type: 3}
+  StarAnimation:
+  - {fileID: 2800000, guid: 4ff1dbe351da64b678106c8e7fccad48, type: 3}
+  - {fileID: 2800000, guid: ff832a6ea9b494d3b9ff1af361ee70db, type: 3}
+  - {fileID: 2800000, guid: 1976c913015564ca995c70db91e5c33c, type: 3}
+  - {fileID: 2800000, guid: 6407a2db4376144a8b4fe831b6c6cb6a, type: 3}
+  - {fileID: 2800000, guid: 75414d23719344184a95e16632b715da, type: 3}
+  - {fileID: 2800000, guid: 07c6bbf03f5554c7cbdf397f1971d91c, type: 3}
+  - {fileID: 2800000, guid: bf120dbea8e5b494283d2df4ae3fd339, type: 3}
+  - {fileID: 2800000, guid: 4bc281274575848268a8ec718eb1eec6, type: 3}
+  - {fileID: 2800000, guid: 4bf6253815a724ea889b27a2d16c7b4f, type: 3}
+  - {fileID: 2800000, guid: b7d1efaf5a5034654b31314d9bb457ae, type: 3}
+  - {fileID: 2800000, guid: 1eed163ecf592476cb9889f6169979f1, type: 3}
   CategoryDropdown: {fileID: 437676627}
   OpenNow: {fileID: 778062443}
   z_MapSlider: {fileID: 675279714}

@@ -9,13 +9,15 @@ using UnityEngine.UI;
 public class DebugModeScript : MonoBehaviour {
     public Dropdown RequestTarget;
 
+    public Text FolderPathText;
+
     public InputField WriteJSON;
     public GameObject WriteJSONDialog;
 
     public Toggle DebugPanelShow_01;
     public Toggle YotusubaDialogShow_Toggle;
     public Toggle ActiveDebugMode_Toggle;
-    public Toggle DebugModeLog_Toggle;
+    public Toggle ActiveErrorVibrate_Toggle;
 
     public GameObject DebugLogObject;
     public InputField DebugLog;
@@ -25,8 +27,7 @@ public class DebugModeScript : MonoBehaviour {
       if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugPanelShow_01.isOn = true; else DebugPanelShow_01.isOn = false;
       if (PlayerPrefs.GetInt("YotsubaChan", 0) == 1) YotusubaDialogShow_Toggle.isOn = true; else YotusubaDialogShow_Toggle.isOn = false;
       if (PlayerPrefs.GetInt("DebugMode_isActive", 0) == 1) ActiveDebugMode_Toggle.isOn = true; else ActiveDebugMode_Toggle.isOn = false;
-      if (PlayerPrefs.GetInt("DebugModeLog", 0) == 1) DebugModeLog_Toggle.isOn = true; else DebugModeLog_Toggle.isOn = false;
-      if (PlayerPrefs.GetInt("DebugModeLog", 0) == 1) DebugLogObject.SetActive(true); else DebugLogObject.SetActive(false);
+      FolderPathText.text = "DataPath: " + Application.persistentDataPath + "\nTempPath: " + Application.temporaryCachePath;
     }
 
     public void ChangeDebugPanelShow_01 () {
@@ -38,9 +39,8 @@ public class DebugModeScript : MonoBehaviour {
     public void Change_ActiveDebugMode_Toggle () {
         if (ActiveDebugMode_Toggle.isOn) PlayerPrefs.SetInt("DebugMode_isActive", 1); else PlayerPrefs.SetInt("DebugMode_isActive", 0);
     }
-    public void Change_DebugModeLog_Toggle () {
-        if (DebugModeLog_Toggle.isOn) PlayerPrefs.SetInt("DebugModeLog", 1); else PlayerPrefs.SetInt("DebugModeLog", 0);
-        if (PlayerPrefs.GetInt("DebugModeLog", 0) == 1) DebugLogObject.SetActive(true); else DebugLogObject.SetActive(false);
+    public void Change_ActiveErrorVibrate_Toggle () {
+        if (ActiveErrorVibrate_Toggle.isOn) PlayerPrefs.SetInt("VibrateCheck", 1); else PlayerPrefs.SetInt("VibrateCheck", 0);
     }
 
     public static string ToReadable( string json )
@@ -103,8 +103,12 @@ public class DebugModeScript : MonoBehaviour {
     }
     public void AllDataRemove()
     {
-        PlayerPrefs.DeleteAll();
-        LogOutput("全データを削除しました。");
+      if (RequestTarget.value == 0) {
+          PlayerPrefs.DeleteKey("Famik");
+      } else if (RequestTarget.value == 1) {
+          PlayerPrefs.DeleteKey("Stars");
+      }
+        LogOutput("指定されたデータを削除しました。");
     }
     public void InsertTestData()
     {
@@ -112,16 +116,9 @@ public class DebugModeScript : MonoBehaviour {
         LogOutput("テストデータを挿入しました。");
     }
 
-    public void LogOutput(string Log)
-    {/*
-        LogNumLines++;
-        if (LogNumLines > 10) {
-            DebugLog.text = "";
-            LogNumLines = 0;
-            LogOutput("ログを自動クリアしました。");
-        }*/
+    public void LogOutput(string Log){
         Debug.Log(Log);
-        DebugLog.text += Log + "\n";
+        DebugLog.text = Log + "\n" + DebugLog.text;
     }
 
     public void LoadSaveJSON()
@@ -131,6 +128,25 @@ public class DebugModeScript : MonoBehaviour {
         } else if (RequestTarget.value == 1) {
             LogOutput(PlayerPrefs.GetString("Stars", "データがありません"));
         }
+    }
+
+    public void YotsubaChanTalkReget() {
+      Directory.CreateDirectory(Application.persistentDataPath + "/YotsubaChanTalkAudio");
+
+      string reqBody;
+      string result;
+      for (int i = 0; i < FamikDatas.VoiceList.Length; i++) {
+          reqBody = "{'audioConfig': {'pitch': 0,'speakingRate': 1,'audioEncoding': 'LINEAR16'},'input': {'text': '" + FamikDatas.VoiceList[i] + "'},'voice': {'languageCode': 'ja-JP','name': 'ja-JP-Wavenet-B'}}";
+          result = Reqlient.HttpRequest.Request("https://texttospeech.googleapis.com/v1/text:synthesize?key=XXXXXXXXXXXXXXXXXXXX", reqBody);
+          byte[] sound = Convert.FromBase64String(JsonUtility.FromJson<GCP_Return>(result).audioContent);;
+
+          File.WriteAllBytes(Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav", sound);
+      }
+      LogOutput("よつばちゃん音声データ再取得完了");
+    }
+
+    public void VersionConvert_4_to_5 () {
+        FamikDatas.VersionConvert_to_5(4);
     }
 
     public void Write()

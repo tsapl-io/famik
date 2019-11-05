@@ -54,7 +54,14 @@ public class ShowScript : MonoBehaviour {
         if (!PlayerPrefs.HasKey("Famik") || (JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "{\"Humans\":[]}"))).Humans.Length == 0) {
             StartCoroutine(PleaseRegisterData(false));
         } else if (JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV < FamikDatas.FamikDataVersion) {
-            StartCoroutine(OldDataVersion());
+          print(JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV);
+          print(FamikDatas.FamikDataVersion);
+            if (JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV == 4) {
+                FamikDatas.VersionConvert_to_5 (4);
+                Start();
+            } else {
+                StartCoroutine(OldDataVersion());
+            }
         } else {
             if (SickTable != null) Destroy(SickTable.gameObject);
             GetComponent<GraphScript>().Start();
@@ -238,9 +245,11 @@ public class ShowScript : MonoBehaviour {
         if (isRegister) {
             MarkImage.texture = XMark;
             DialogObject_Text.text = "データを登録してください。\n\nタイトル画面に戻ります。";
+            if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
         } else {
             MarkImage.texture = XMark;
             DialogObject_Text.text = "ユーザー登録画面でユーザーを追加してください。\n\nタイトル画面に戻ります。";
+            if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
         }
         DialogObject.SetActive(true);
         DialogObject_Time.UpdateBar(3, 3);
@@ -269,12 +278,12 @@ public class ShowScript : MonoBehaviour {
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(1);
         SocialConnector.SocialConnector.Share ("Famik " + inStorageData.Humans[HumanSelect.value].Name + "のデータ", "", Application.persistentDataPath + "/image.png");
-        print("aaaa");
     }
     IEnumerator OldDataVersion()
     {
         MarkImage.texture = XMark;
         DialogObject_Text.text = "Famikデータ形式が古いため、\n読み込めませんでした。\nアプリバージョン: " + FamikDatas.FamikDataVersion + "\nデータバージョン: " + JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).FDV;
+        if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
         DialogObject.SetActive(true);
         DialogObject_Time.UpdateBar(3, 3);
         yield return new WaitForSeconds(1);
@@ -301,7 +310,7 @@ public class ShowScript : MonoBehaviour {
             texture.LoadImage(bytes);
             */
             string FileName = inStorageData.Humans[HumanSelect.value].OneSicks[i].Image + ".famikimage";
-            byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FileName);
+            byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/ImageDatas/" + FileName);
 
 
             var texture = new Texture2D(1, 1);

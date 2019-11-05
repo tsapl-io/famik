@@ -110,11 +110,11 @@ public class GoogleVoiceSpeech : MonoBehaviour {
             yield return new WaitForSeconds(1);
 
             float filenameRand = UnityEngine.Random.Range (0.0f, 10.0f);
-            string filename = "testing" + filenameRand;
+            string filename = "speech" + filenameRand;
             Microphone.End(null);
             if (!filename.ToLower().EndsWith(".wav")) filename += ".wav";
-            var filePath = Path.Combine("speechtemp/", filename);
-            filePath = Path.Combine(Application.persistentDataPath, filePath);
+            var filePath = Path.Combine("SpeechAudio/", filename);
+            filePath = Path.Combine(Application.temporaryCachePath, filePath);
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             SavWav.Save (filePath, goAudioSource.clip);
             string Response;

@@ -52,6 +52,7 @@ public class SearchScript : MonoBehaviour {
 
     public Texture unStar;
     public Texture Star;
+    public Texture[] StarAnimation;
 
     bool isRunning = false;
     float lat;
@@ -265,6 +266,27 @@ public class SearchScript : MonoBehaviour {
     }
 
 
+    public IEnumerator StarAnimate(bool isStar, int number) {
+        if (isStar) {
+            // スターをつけるアニメーション
+            StarButtons[number].GetComponent<RawImage>().texture = unStar;
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            for (int i = 0; i < StarAnimation.Length; i++) {
+                StarButtons[number].GetComponent<RawImage>().texture = StarAnimation[i];
+                yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            }
+            StarButtons[number].GetComponent<RawImage>().texture = Star;
+        } else {
+            // スターを消すアニメーション
+            StarButtons[number].GetComponent<RawImage>().texture = Star;
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            StarButtons[number].GetComponent<RawImage>().texture = StarAnimation[1];
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            StarButtons[number].GetComponent<RawImage>().texture = StarAnimation[0];
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            StarButtons[number].GetComponent<RawImage>().texture = unStar;
+        }
+    }
     public void PushStarButton(int number)
     {
         List<string> starList = new List<string>(JsonUtility.FromJson<StarJson>(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}")).Stars);
@@ -272,13 +294,15 @@ public class SearchScript : MonoBehaviour {
         {
             if (starList.Count <= 14) {
                 starList.Add(ApiResponse.Feature[number].Property.Uid);
-                StarButtons[number].GetComponent<RawImage>().texture = Star;
+                StartCoroutine(StarAnimate(true, number));
+            } else {
+                if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
             }
         }
         else
         {
             starList.Remove(ApiResponse.Feature[number].Property.Uid);
-            StarButtons[number].GetComponent<RawImage>().texture = unStar;
+            StartCoroutine(StarAnimate(false, number));
         }
         StarJson temporaryStarJson = new StarJson();//以下二行だけ
         temporaryStarJson.Stars = starList.ToArray();

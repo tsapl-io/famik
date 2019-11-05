@@ -51,13 +51,25 @@ public class SaveData {
 
 public static class FamikDatas
 {
-    public static int FamikDataVersion{
-        get
-        {
-            return 4;
-
+    public static int FamikDataVersion { get { return 5; } }
+    public static void VersionConvert_to_5 (int FromVersion) {
+        if (FromVersion == 4) {
+            var dirs = Directory.GetFiles(Application.persistentDataPath);
+            foreach (var d in dirs) {
+              Debug.Log(d);
+                if (d.IndexOf("Famik_Image_") > -1) {
+                    File.Move(d, Application.persistentDataPath + "/ImageDatas/" + System.IO.Path.GetFileName(d));
+                }
+            }
+            var sv = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA"));
+            sv.FDV = 5;
+            PlayerPrefs.SetString("Famik", JsonUtility.ToJson(sv));
+            PlayerPrefs.Save();
+        } else {
+            Debug.LogError("コンバートエラー：対応していないデータバージョン");
         }
     }
+    public static string[] VoiceList = {"データ登録しました。", "マスクの着用をおすすめします。", "咳が続くようならば病院の受診をおすすめします。", "手洗いうがいをこまめにすることをおすすめします。", "鼻をかんだら、水分の補給をお忘れなく。", "頭が痛いのは辛いですね。早めに休んでくださいね。", "のどを乾燥させないように気をつけてくださいね。", "のどの乾燥を防ぐのに、マスクやのど飴、うがいは有効ですよ！", "お腹が痛くなった状況や経過を、そのた欄に記録しておくことをおすすめします。", "ふらふらしたら早めに休んでくださいね。", "めまいが続いたら病院の受診をおすすめします。", "食欲がなくても水分の補給はお忘れなく！", "湿疹を写真に撮ってお医者さんに見せると、説明が楽ですよ！", "湿疹が広がっているようならば、病院の受診をおすすめします。", "水分を十分にとって、早めにお休みください。", "熱が続くようなら、病院の受診をおすすめします。"};
 }
 
 /*
@@ -128,17 +140,18 @@ public class RegisterScript : MonoBehaviour {
     [Header("よつばちゃんダイアログ")]
     public GameObject YotsubaDialog;
     public Text YotsubaDialog_Text;
-    public SimpleHealthBar YotsubaDialog_Time;
+    public AudioSource audioSource;
 
     //List<bool> symptoms = {Sneeze.isOn, Dripping.isOn, Headache.isOn, SoreThroat.isOn, StomachAche.isOn, Dizzy.isOn, NoAppetite.isOn, Rash.isOn};
     //List<int> already_number = new List<int>();
 
     IEnumerator Start () {
         if (PlayerPrefs.GetInt("FamikSetting_RegisterDebugDialog", 0) == 1) DebugDialog.SetActive(true); else DebugDialog.SetActive(false);
-      print(Application.HasUserAuthorization(UserAuthorization.Microphone));
+            print("マイクへのアクセス権限: " + Application.HasUserAuthorization(UserAuthorization.Microphone));
         if (PlayerPrefs.GetString("Famik", "NO DATA") == "NO DATA" || JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA")).Humans.Length == 0) {
             MarkImage.texture = XMark;
             DialogObject_Text.text = "ユーザー登録画面でユーザーを追加してください。\n\nタイトル画面に戻ります。";
+            if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
   		      DialogObject.SetActive(true);
             DialogObject_Time.UpdateBar(3, 3);
             yield return new WaitForSeconds(1);
@@ -156,6 +169,14 @@ public class RegisterScript : MonoBehaviour {
                 HumanSelectOptions.Add(LoadedData.Humans[i].Name);
             }
             HumanSelect.AddOptions(HumanSelectOptions);
+            /*
+            CultureInfo myCI = new CultureInfo("ja-JP");
+            Calendar myCal = myCI.Calendar;
+            CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
+            DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
+            DateTime LastDay = new System.DateTime(DateTime.Now.Year, 12, 31);
+            "https://www.niid.go.jp/niid/images/idwr/sokuho/idwr-" + DateTime.Now.Year + "/" + DateTime.Now.Year + myCal.GetWeekOfYear(LastDay, myCWR, myFirstDOW) + "/" + DateTime.Now.Year + "-" + myCal.GetWeekOfYear(LastDay, myCWR, myFirstDOW) + "zensu.csv"
+            */
         }
     }
 
@@ -175,7 +196,8 @@ public class RegisterScript : MonoBehaviour {
 
             if (Encoding.GetEncoding("UTF-8").GetByteCount(PlayerPrefs.GetString("Famik", " ")) > 10485760) {
                 MarkImage.texture = XMark;
-                StartCoroutine(CompleteBack("Famikのセーブデータが10MBを超えているため、保存ができません。"));
+                if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
+                StartCoroutine(CompleteBack("Famikのセーブデータサイズが大きいため、保存ができません。"));
             }
 
             if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult == 0 && !Sneeze.isOn && !Dripping.isOn && !Headache.isOn && !SoreThroat.isOn && !StomachAche.isOn && !Dizzy.isOn && !NoAppetite.isOn && !Rash.isOn && (Other.text == null || Other.text.Trim() == "") && !GetComponent<PictureScript>().isPictureSaved) {
@@ -183,9 +205,11 @@ public class RegisterScript : MonoBehaviour {
             } else {
                 if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult < 35.0f && GetComponent<GoogleVoiceSpeech>().FeverSpeechResult != 0) {
                     MarkImage.texture = XMark;
+                    if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
                     StartCoroutine(CompleteBack("異常に体温が低すぎます。\nもう一度やり直してください。"));
                 } else if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 42.0f) {
                     MarkImage.texture = XMark;
+                    if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
                     StartCoroutine(CompleteBack("異常に体温が高すぎます。\n例:「39.0」\nもう一度やり直してください。"));
                 } else {
                     SaveData inStorageData = JsonUtility.FromJson<SaveData>(PlayerPrefs.GetString("Famik", "NO DATA"));
@@ -221,7 +245,8 @@ public class RegisterScript : MonoBehaviour {
                         inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Image = "Famik_Image_" + uuid;
                         string FileName = "Famik_Image_" + uuid + ".famikimage";
                         byte[] Data = GetComponent<PictureScript>().ImageBytes;
-                        File.WriteAllBytes(Application.persistentDataPath + "/" + FileName, Data);
+                        if (!Directory.Exists(Application.persistentDataPath + "/ImageDatas")) Directory.CreateDirectory(Application.persistentDataPath + "/ImageDatas");
+                        File.WriteAllBytes(Application.persistentDataPath + "/ImageDatas/" + FileName, Data);
                     } else {
                         inStorageData.Humans[HumanSelect.value].OneSicks[SequenceNumberToBeAddedThisTime].Image = "NOTHING";
                     }
@@ -234,6 +259,7 @@ public class RegisterScript : MonoBehaviour {
             }
         } catch (PlayerPrefsException) {
             MarkImage.texture = XMark;
+            if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
             StartCoroutine(CompleteBack("端末の容量が少ないため、保存ができませんでした。"));
         }
     }
@@ -246,6 +272,7 @@ public class RegisterScript : MonoBehaviour {
                 DialogObject_Text.text = "データ登録が完了しました。\n\nタイトル画面に戻ります。";
             } else {
                 DialogObject.SetActive(false);
+                YotsubaDialog.SetActive(true);
                 YotsubaDialog_Text.text = "";
 
                 int check_num = 0;
@@ -311,7 +338,7 @@ public class RegisterScript : MonoBehaviour {
                             List<string> stomachache_sentence = new List<string>(tmp);
                             YotsubaDialog_Text.text += "\n\n" + stomachache_sentence[UnityEngine.Random.Range(0, stomachache_sentence.Count)];
                         } else if (order[i] == 5) {
-                            string[] tmp = {"早めに休んでくださいね。", "めまいが続いたら病院の受診をおすすめします。"};
+                            string[] tmp = {"ふらふらしたら早めに休んでくださいね。", "めまいが続いたら病院の受診をおすすめします。"};
                             List<string> dizzy_sentence = new List<string>(tmp);
                             YotsubaDialog_Text.text += "\n\n" + dizzy_sentence[UnityEngine.Random.Range(0, dizzy_sentence.Count)];
                         } else if (order[i] == 6) {
@@ -331,6 +358,21 @@ public class RegisterScript : MonoBehaviour {
                     string[] tmp = {"水分を十分にとって、早めにお休みください。", "熱が続くようなら、病院の受診をおすすめします。"};
                     List<string> fever_sentence = new List<string>(tmp);
                     YotsubaDialog_Text.text += "\n\n" + fever_sentence[UnityEngine.Random.Range(0, fever_sentence.Count)];
+                }
+
+
+                yield return new WaitForSeconds(0.2f);
+
+                for (int i = 0; i < FamikDatas.VoiceList.Length; i++) {
+                    if (YotsubaDialog_Text.text.IndexOf(FamikDatas.VoiceList[i]) > -1) {
+                        //print("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav");
+                        using (WWW www = new WWW("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav")) {
+                            yield return www;
+                            audioSource.clip = www.GetAudioClip(true, true);
+                            audioSource.Play();
+                            yield return new WaitForSeconds(audioSource.clip.length);
+                        }
+                    }
                 }
 
                 /*
@@ -391,17 +433,13 @@ public class RegisterScript : MonoBehaviour {
                 if (Sneeze.isOn && Dripping.isOn) {
                     YotsubaDialog_Text.text = "データ登録しました。\n手洗いうがいを心がけましょう。\nマスクの着用をおすすめします。";
                 }*/
-
-                if (YotsubaDialog_Text.text == "") {
-                    YotsubaDialog_Text.text = "データ登録しました。";
-                }
-                YotsubaDialog.SetActive(true);
             }
         } else {
             temp_yotsuba = 0;
             MarkImage.texture = XMark;
             DialogObject_Text.text = "データが空です。\n\nデータを入力してください。";
             DialogObject.SetActive(true);
+            if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
         }
         if (temp_yotsuba == 0) {
             DialogObject_Time.UpdateBar(3, 3);
@@ -414,19 +452,7 @@ public class RegisterScript : MonoBehaviour {
             DialogObject.SetActive(false);
             DialogObject_Time.UpdateBar(3, 3);
         } else {
-            YotsubaDialog_Time.UpdateBar(5, 5);
-            yield return new WaitForSeconds(1);
-            YotsubaDialog_Time.UpdateBar(4, 5);
-            yield return new WaitForSeconds(1);
-            YotsubaDialog_Time.UpdateBar(3, 5);
-            yield return new WaitForSeconds(1);
-            YotsubaDialog_Time.UpdateBar(2, 5);
-            yield return new WaitForSeconds(1);
-            YotsubaDialog_Time.UpdateBar(1, 5);
-            yield return new WaitForSeconds(1);
-            YotsubaDialog_Time.UpdateBar(0, 5);
             YotsubaDialog.SetActive(false);
-            YotsubaDialog_Time.UpdateBar(5, 5);
         }
         if (!emptyError) {
             SceneManager.LoadScene("Main");
@@ -439,6 +465,7 @@ public class RegisterScript : MonoBehaviour {
     {
         DialogObject_Text.text = message;
         DialogObject.SetActive(true);
+        if (PlayerPrefs.GetInt("VibrateCheck", 1) == 1) Handheld.Vibrate();
         DialogObject_Time.UpdateBar(3, 3);
         yield return new WaitForSeconds(1);
         DialogObject_Time.UpdateBar(2, 3);

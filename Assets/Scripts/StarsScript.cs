@@ -9,6 +9,7 @@ public class StarsScript : MonoBehaviour {
 
     public Texture unStar;
     public Texture Star;
+    public Texture[] StarAnimation;
     public List<Button> StarButtons;
     public List<Button> HPButtons;
     public List<Button> HPButtons2;
@@ -61,6 +62,7 @@ public class StarsScript : MonoBehaviour {
 
         print(PlayerPrefs.GetString("Stars", "{\"Stars\":[]}"));
 
+        print(starJson2.Stars.Length);
         if (starJson2.Stars.Length == 0)
         {
             NoStarsText.SetActive(true);
@@ -125,14 +127,36 @@ public class StarsScript : MonoBehaviour {
           }
     }
 
+    public IEnumerator StarAnimate(bool isStar, int number) {
+        if (isStar) {
+            // スターをつけるアニメーション
+            StarButtons[number].GetComponent<RawImage>().texture = unStar;
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            for (int i = 0; i < StarAnimation.Length; i++) {
+                StarButtons[number].GetComponent<RawImage>().texture = StarAnimation[i];
+                yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            }
+            StarButtons[number].GetComponent<RawImage>().texture = Star;
+        } else {
+            // スターを消すアニメーション
+            StarButtons[number].GetComponent<RawImage>().texture = Star;
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            StarButtons[number].GetComponent<RawImage>().texture = StarAnimation[1];
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            StarButtons[number].GetComponent<RawImage>().texture = StarAnimation[0];
+            yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+            StarButtons[number].GetComponent<RawImage>().texture = unStar;
+        }
+    }
+
     public void PushStarButton(int number)
     {
         if (StarButtons[number].GetComponent<RawImage>().texture == unStar) {
             starList.Add(starJson2.Stars[number]);
-            StarButtons[number].GetComponent<RawImage>().texture = Star;
+            StartCoroutine(StarAnimate(true, number));
         } else {
             starList.Remove(starJson2.Stars[number]);
-            StarButtons[number].GetComponent<RawImage>().texture = unStar;
+            StartCoroutine(StarAnimate(false, number));
         }
         StarJson temporaryStarJson = new StarJson();//以下二行だけ
         temporaryStarJson.Stars = starList.ToArray();
