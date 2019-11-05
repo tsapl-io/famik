@@ -74,8 +74,8 @@ public class GoogleVoiceSpeech : MonoBehaviour {
             RecordButton_Text.text = "インターネット接続なし";
         } else {
             if (Microphone.devices.Length <= 0) {
-    			Debug.LogError("Speech: マイクが見つかりません");
-                isMicrophoneFound = false;
+			         Debug.LogError("Speech: マイクが見つかりません");
+               isMicrophoneFound = false;
     		} else {
     			Microphone.GetDeviceCaps(null, out minFreq, out maxFreq);
     			if(minFreq == 0 && maxFreq == 0) maxFreq = 44100;
@@ -132,6 +132,7 @@ public class GoogleVoiceSpeech : MonoBehaviour {
                         // 言った言葉 -> 認識した言葉、これを直すのがこの行のif文
             string str = jsonresponse["results"][0]["alternatives"][0]["transcript"].ToString().Trim(new char[]{'"'});
 
+            /*
             if (str.IndexOf("三十") != -1) str = str.Replace("三十", "3");
             if (str.IndexOf("四十") != -1) str = str.Replace("四十", "4");
             if (str.IndexOf("零") != -1) str = str.Replace("零", "0");
@@ -187,6 +188,178 @@ public class GoogleVoiceSpeech : MonoBehaviour {
               } else if (str.EndsWith("6v")) {     // ○○度9分    -> ○6v
                 str = str.Replace("6v", ".9");
               }
+              */
+
+              // 基本変換 //
+              str = str.Replace("°", ".");
+              if (str.EndsWith("摂氏温度")) str = str.Replace("摂氏温度", ".0"); else str = str.Replace("摂氏温度", ".");
+              str = str.Replace(" D ", ".");
+              str = str.Replace("V", "");
+              str = str.Replace("と", ".");
+              str = str.Replace("度", ".");
+              str = str.Replace("分", ".");
+              str = str.Replace("c ", ".");
+
+              // 「v」変換 //
+              str = str.Replace("1v", ".1");
+              str = str.Replace("2v", ".2");
+              str = str.Replace("3v", ".3");
+              str = str.Replace("4v", ".4");
+              str = str.Replace("5v", ".5");
+              str = str.Replace("6v", ".6");
+              str = str.Replace("7v", ".7");
+              str = str.Replace("8v", ".8");
+              str = str.Replace("9v", ".9");
+              str = str.Replace("9v", ".9");
+
+              // 「ぜろぶ」変換 //
+              str = str.Replace(" dlove", ".0");
+              str = str.Replace("0v", "0");
+              str = str.Replace("05", "0");
+              str = str.Replace("全", "0");
+
+              // 「れいぶ」変換 //
+              str = str.Replace("ドル AV", ".0");
+              str = str.Replace("ドライブ", ".0");
+              str = str.Replace("レイヴ", "0");
+
+              // 「きゅうぶ」変換 //
+              str = str.Replace("キューブ", "9");
+
+              // 「くぶ」変換 //
+              str = str.Replace("毒位", ".9");
+              str = str.Replace(" XV", ".9");
+
+              // 漢数字変換 //
+              str = str.Replace("三十", "3");
+              str = str.Replace("四十", "4");
+              str = str.Replace("零", "0");
+              str = str.Replace("一", "1");
+              str = str.Replace("二", "2");
+              str = str.Replace("三", "3");
+              str = str.Replace("四", "4");
+              str = str.Replace("五", "5");
+              str = str.Replace("六", "6");
+              str = str.Replace("七", "7");
+              str = str.Replace("八", "8");
+              str = str.Replace("九", "9");
+              str = str.Replace("１", "1");
+              str = str.Replace("２", "2");
+              str = str.Replace("３", "3");
+              str = str.Replace("４", "4");
+              str = str.Replace("５", "5");
+              str = str.Replace("６", "6");
+              str = str.Replace("７", "7");
+              str = str.Replace("８", "8");
+              str = str.Replace("９", "9");
+              str = str.Replace("０", "0");
+
+              // ひらがな変換 //
+              str = str.Replace("さんじゅう", "3");
+              str = str.Replace("よんじゅう", "4");
+              str = str.Replace("れい", "0");
+              str = str.Replace("いち", "1");
+              str = str.Replace("に", "2");
+              str = str.Replace("さん", "3");
+              str = str.Replace("し", "4");
+              str = str.Replace("ご", "5");
+              str = str.Replace("ろく", "6");
+              str = str.Replace("なな", "7");
+              str = str.Replace("しち", "7");
+              str = str.Replace("はち", "8");
+              str = str.Replace("く", "9");
+              str = str.Replace("きゅう", "9");
+              str = str.Replace("ど", ".");
+              str = str.Replace("ぶ", "");
+
+              /*
+              基本変換
+              「°」を「.」に
+              もし「摂氏温度」が最後ならば「摂氏温度」を「.0」に
+              そうでなければ「摂氏温度」を「.」に
+              「 D 」を「.」に
+              「V」を「」に
+              「と」を「.」に
+              「度」を「.」に
+              「部」を「」に
+              「分」を「」に
+              「c 」を「」に
+
+              「v」変換
+              「1v」を「.1」に
+              「2v」を「.2」に
+              「3v」を「.3」に
+              「4v」を「.4」に
+              「5v」を「.5」に
+              「6v」を「.6」に
+              「7v」を「.7」に
+              「8v」を「.8」に
+              「9v」を「.9」に
+
+              「ぜろぶ」変換
+              「 dlove」を「.0」に
+              「0v」を「0」に
+              「05」を「0」に
+              「全」を「0」に
+
+              「れいぶ」変換
+              「ドル AV」を「.0」に
+              「ドライブ」を「.0」に
+              「レイヴ」を「0」に
+
+              「きゅうぶ」変換
+              「キューブ」を「9」に
+
+              「くぶ」変換
+              「毒位」を「.9」に
+              「 XV」を「.9」に
+
+              ひらがな変換
+              「さんじゅう」を「3」に
+              「よんじゅう」を「4」に
+              「いち」を「1」に
+              「に」を「2」に
+              「さん」を「3」に
+              「し」を「4」に
+              「ご」を「5」に
+              「ろく」を「6」に
+              「しち」を「7」に
+              「なな」を「7」に
+              「はち」を「8」に
+              「きゅう」を「9」に
+              「く」を「9」に
+              「れい」を「0」に
+              「ぜろ」を「0」に
+              「ど」を「.」に
+              「ぶ」を「」に
+
+              漢数字変換
+              「三十」を「3」に
+              「四十」を「4」に
+              「一」を「1」に
+              「二」を「2」に
+              「三」を「3」に
+              「四」を「4」に
+              「五」を「5」に
+              「六」を「6」に
+              「七」を「7」に
+              「八」を「8」に
+              「九」を「9」に
+              「零」を「0」に
+              「１」を「1」に
+              「２」を「2」に
+              「３」を「3」に
+              「４」を「4」に
+              「５」を「5」に
+              「６」を「6」に
+              「７」を「7」に
+              「８」を「8」に
+              「９」を「9」に
+              「０」を「0」に
+              */
+
+
+
               debug.text += ("str: " + str + "\n");
               try {
                 if (!ErrorFlag) FeverSpeechResult = float.Parse(str);

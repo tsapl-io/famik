@@ -287,7 +287,7 @@ public class RegisterScript : MonoBehaviour {
                     if (Rash.isOn) {
                         order.Add(7);
                     }
-                    
+
                     order = order.OrderBy(a => Guid.NewGuid()).ToList();
                     for (int i = 0; i < order.Count; i++) {
                         if (order[i] == 0) {
@@ -319,7 +319,7 @@ public class RegisterScript : MonoBehaviour {
                             List<string> noappetite_sentence = new List<string>(tmp);
                             YotsubaDialog_Text.text += "\n\n" + noappetite_sentence[UnityEngine.Random.Range(0, noappetite_sentence.Count)];
                         } else if (order[i] == 7) {
-                            string[] tmp = {"発疹を写真に撮ってお医者さんに見せると、説明が楽ですよ！", "発疹が広がっているようならば、病院の受診をおすすめします。"};
+                            string[] tmp = {"湿疹を写真に撮ってお医者さんに見せると、説明が楽ですよ！", "湿疹が広がっているようならば、病院の受診をおすすめします。"};
                             List<string> rash_sentence = new List<string>(tmp);
                             YotsubaDialog_Text.text += "\n\n" + rash_sentence[UnityEngine.Random.Range(0, rash_sentence.Count)];
                         }
