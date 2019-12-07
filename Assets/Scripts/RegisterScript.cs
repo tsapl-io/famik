@@ -68,7 +68,8 @@ public static class FamikDatas
             Debug.LogError("コンバートエラー：対応していないデータバージョン");
         }
     }
-    public static string[] VoiceList = {"データ登録しました。", "マスクの着用をおすすめします。", "咳が続くようならば病院の受診をおすすめします。", "手洗いうがいをこまめにすることをおすすめします。", "鼻をかんだら、水分の補給をお忘れなく。", "頭が痛いのは辛いですね。早めに休んでくださいね。", "のどを乾燥させないように気をつけてくださいね。", "のどの乾燥を防ぐのに、マスクやのど飴、うがいは有効ですよ！", "お腹が痛くなった状況や経過を、そのた欄に記録しておくことをおすすめします。", "ふらふらしたら早めに休んでくださいね。", "めまいが続いたら病院の受診をおすすめします。", "食欲がなくても水分の補給はお忘れなく！", "湿疹を写真に撮ってお医者さんに見せると、説明が楽ですよ！", "湿疹が広がっているようならば、病院の受診をおすすめします。", "水分をじゅうぶんにとって、早めにお休みください。", "熱が続くようなら、病院の受診をおすすめします。"};
+    public static string[] VoiceList = {"データ登録しました。", "マスクの着用をおすすめします。", "咳が続くようならば病院の受診をおすすめします。", "手洗いうがいをこまめにすることをおすすめします。", "鼻をかんだら、水分の補給をお忘れなく。", "頭が痛いのは辛いですね。早めに休んでくださいね。", "のどを乾燥させないように気をつけてくださいね。", "のどの乾燥を防ぐのに、マスクやのど飴、うがいは有効ですよ！", "お腹が痛くなった状況や経過を、その他欄に記録しておくことをおすすめします。", "ふらふらしたら早めに休んでくださいね。", "めまいが続いたら病院の受診をおすすめします。", "食欲がなくても水分の補給はお忘れなく！", "湿疹を写真に撮ってお医者さんに見せると、説明が楽ですよ！", "湿疹が広がっているようならば、病院の受診をおすすめします。", "水分を十分にとって、早めにお休みください。", "熱が続くようなら、病院の受診をおすすめします。"};
+    public static string[] VoiceList_Get = {"データ登録しました。", "マスクの着用をおすすめします。", "咳が続くようならば病院の受診をおすすめします。", "手洗いうがいをこまめにすることをおすすめします。", "鼻をかんだら、水分の補給をお忘れなく。", "頭が痛いのは辛いですね。早めに休んでくださいね。", "のどを乾燥させないように気をつけてくださいね。", "のどの乾燥を防ぐのに、マスクやのど飴、うがいは有効ですよ！", "お腹が痛くなった状況や経過を、そのた欄に記録しておくことをおすすめします。", "ふらふらしたら早めに休んでくださいね。", "めまいが続いたら病院の受診をおすすめします。", "食欲がなくても水分の補給はお忘れなく！", "湿疹を写真に撮ってお医者さんに見せると、説明が楽ですよ！", "湿疹が広がっているようならば、病院の受診をおすすめします。", "水分をじゅうぶんにとって、早めにお休みください。", "熱が続くようなら、病院の受診をおすすめします。"};
 }
 
 /*
@@ -309,7 +310,7 @@ public class RegisterScript : MonoBehaviour {
                         order.Add(7);
                     }
 
-                    order = order.OrderBy(a => Guid.NewGuid()).ToList();
+                    //order = order.OrderBy(a => Guid.NewGuid()).ToList();
                     for (int i = 0; i < order.Count; i++) {
                         if (order[i] == 0) {
                             string[] tmp = {"マスクの着用をおすすめします。", "咳が続くようならば病院の受診をおすすめします。"};
@@ -359,7 +360,6 @@ public class RegisterScript : MonoBehaviour {
 
                     for (int i = 0; i < FamikDatas.VoiceList.Length; i++) {
                         if (YotsubaDialog_Text.text.IndexOf(FamikDatas.VoiceList[i]) > -1) {
-                            //print("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav");
                             using (WWW www = new WWW("file://" + Application.persistentDataPath + "/YotsubaChanTalkAudio/" + i + ".wav")) {
                                 yield return www;
                                 audioSource.clip = www.GetAudioClip(true, true);
@@ -371,65 +371,6 @@ public class RegisterScript : MonoBehaviour {
                 } else {
                     yield return new WaitForSeconds(3f);
                 }
-
-                /*
-                int limit;
-                limit = 0;
-                if (Sneeze.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "咳が出るようですね。\nマスクの着用をおすすめします。";
-                    limit++;
-                } if (Dripping.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "手洗いうがいを心がけてください。";
-                    limit++;
-                } if (Headache.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "なるべく横になっていた方が良いですね。";
-                    limit++;
-                } if (SoreThroat.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "あまり大声を出さないでくださいね。";
-                    limit++;
-                } if (StomachAche.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "消化の良いものを食べてくださいね。";
-                    limit++;
-                } if (Dizzy.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "なるべく動かないでくださいね。";
-                    limit++;
-                } if (NoAppetite.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "無理に食べないようにしてくださいね。";
-                    limit++;
-                } if (Rash.isOn && limit != 2) {
-                    YotsubaDialog_Text.text += "発疹が広がるようならば病院に行くことをおすすめします。";
-                    limit++;
-                } if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 38.0f && limit != 2) {
-                    YotsubaDialog_Text.text += "水分を十分にとって、早めにお休みください。";
-                    limit++;
-                }
-
-                if (check_num > 1) {
-
-                    YotsubaDialog_Text.text += "\n" + random_select_text();
-
-                } else if (check_num == 1) {
-
-                }
-
-                if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 38.0f) {
-                    YotsubaDialog_Text.text = "データ登録しました。\n熱が高いようですね。";
-                }
-                if (Dizzy.isOn) {
-                    YotsubaDialog_Text.text = "データ登録しました。\nめまいがするようですね。";
-                }
-                if (GetComponent<GoogleVoiceSpeech>().FeverSpeechResult > 38.0f && Dizzy.isOn) {
-                    YotsubaDialog_Text.text = "データ登録しました。\nどうぞお大事にしてください。";
-                }
-                if (Sneeze.isOn) {
-                    YotsubaDialog_Text.text = "データ登録しました。\n咳が出るようですね。\nマスクの着用をおすすめします。";
-                }
-                if (Dripping.isOn) {
-                    YotsubaDialog_Text.text = "データ登録しました。\n手洗いうがいを心がけましょう。";
-                }
-                if (Sneeze.isOn && Dripping.isOn) {
-                    YotsubaDialog_Text.text = "データ登録しました。\n手洗いうがいを心がけましょう。\nマスクの着用をおすすめします。";
-                }*/
             }
         } else {
             temp_yotsuba = 0;
